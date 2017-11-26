@@ -1,0 +1,21 @@
+{
+  "name": "jsonapi-demo-client",
+  "version": "1.0.0",
+  "description": "JSON API demo client",
+  "main": "src/index.js",
+  "author": "Jason Stafford <jason.stafford@scrycollective.com>",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
+    "react-scripts": "1.0.17"
+  },
+  "scripts": {
+    "build": "react-scripts build",
+    "start": "react-scripts start",
+    "test": "react-scripts test --env=jsdom"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  }
+}
