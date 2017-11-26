@@ -11,6 +11,10 @@
   "devDependencies": {
     "eslint": "^4.11.0"
   },
+  "scripts": {
+    "start": "node src/index.js",
+    "lint": "eslint ./src"
+  },
   "eslintConfig": {
     "env": {
       "es6": true,

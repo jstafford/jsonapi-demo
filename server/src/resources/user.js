@@ -1,19 +1,19 @@
 'use strict'
 
 const jsonapiServer = require('jsonapi-server')
-const usersHandler = require('../handlers/usersHandler.js')
+const userHandler = require('../handlers/userHandler.js')
 
 jsonapiServer.define({
   namespace: 'json:api',
   resource: 'user',
   description: 'Public information about each user.',
-  handlers: usersHandler,
+  handlers: userHandler,
   searchParams: { },
   attributes: {
     username: jsonapiServer.Joi.string().regex(/^[A-Za-z]+[-0-9A-Z_a-z]+[0-9A-Za-z]+$/)
       .description('The users public username')
       .example('yertle-the-turtle'),
-    datasets: jsonapiServer.Joi.many('datasets')
+    datasets: jsonapiServer.Joi.many('dataset')
       .description('All of the datasets owned by this user')
   },
   examples: [
