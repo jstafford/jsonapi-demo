@@ -35,7 +35,7 @@ const mapState = (state: GenericMap, ownProps: Object): Object => {
 const mapDisp = (dispatch: Dispatch<Action>, ownProps: Object): Object => (
   {
     ensureUser: (id:string): void => {
-      dispatch(ensureResource({type:'user', id}))
+      dispatch(ensureResource({type:'user', id, params:'include=datasets'}))
     }
   }
 )

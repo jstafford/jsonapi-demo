@@ -7,11 +7,12 @@ const INDEX_ENSURE_RESOURCE = 'INDEX_ENSURE_RESOURCE'
 export const ensureResource = createAction(INDEX_ENSURE_RESOURCE)
 
 const handleEnsureResource = (store, action) => {
-  const {type, id} = action.payload
+  const {type, id, params} = action.payload
   const state = store.getState()
   const hasResource = state.resourceIndex && state.resourceIndex[type] && state.resourceIndex[type][id]
   if (!hasResource) {
-    store.dispatch(readEndpoint(`${type}/${id}`))
+    const url = params ? `${type}/${id}?${params}` : `${type}/${id}`
+    store.dispatch(readEndpoint(url))
   }
 }
 
