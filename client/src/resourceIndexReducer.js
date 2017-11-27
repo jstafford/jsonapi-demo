@@ -1,11 +1,11 @@
-import { createAction } from 'redux-actions';
+import {createAction} from 'redux-actions'
 
 
 const INDEX_REFRESH = 'INDEX_REFRESH'
 
 export const indexRefresh = createAction(INDEX_REFRESH)
 
-const refreshIndex = (state, action) => {
+const refreshIndexHandler = (state, action) => {
   const api = action.payload
   // extract just the non default parts of the api store
   const {isCreating, isReading, isUpdating, isDeleting, endpoint, ...resources} = api
@@ -26,7 +26,7 @@ const refreshIndex = (state, action) => {
 const resourceIndexReducer = (state = {}, action) => {
   switch (action.type) {
     case INDEX_REFRESH:
-      return refreshIndex(state, action)
+      return refreshIndexHandler(state, action)
     default:
       return state
   }

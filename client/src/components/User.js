@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
+import {Link} from 'react-router-dom'
 import user from '../user'
 import Dataset from './Dataset'
 
@@ -14,7 +15,7 @@ class UserRender extends Component<{
         ? data.relationships.datasets.data
         : null
       return (
-        <li>{data.attributes.username}
+        <li><Link to={`/user/${data.id}`}>{data.attributes.username}</Link>
           {datasets && <ul>{datasets.map(dataset => (
             <Dataset key={dataset.id} datasetid={dataset.id}/>
           ))}</ul>}

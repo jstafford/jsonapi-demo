@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
+import {Link} from 'react-router-dom'
 import dataset from '../dataset'
 
 class DatasetRender extends Component<{
@@ -10,7 +11,7 @@ class DatasetRender extends Component<{
     const {data} = this.props
     if (data) {
       return (
-        <li>{data.attributes.title}</li>
+        <li><Link to={`/dataset/${data.id}`}>{data.attributes.title}</Link></li>
       )
     } else {
       return null
