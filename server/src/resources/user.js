@@ -5,7 +5,7 @@ const userHandler = require('../handlers/userHandler.js')
 
 jsonapiServer.define({
   namespace: 'json:api',
-  resource: 'user',
+  resource: 'users',
   description: 'Public information about each user.',
   handlers: userHandler,
   searchParams: { },
@@ -19,7 +19,7 @@ jsonapiServer.define({
   examples: [
     {
       id: '42D2F0C8-407D-48DB-A944-D6D68D28DE2A',
-      type: 'user',
+      type: 'users',
       username: 'demo-user',
       datasets: [
         { type: 'datasets', id: 'A2930D1F-BB4B-4AA3-8A77-6752A17D3A38' },

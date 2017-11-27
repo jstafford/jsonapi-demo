@@ -28,8 +28,8 @@ class UserRender extends Component<{
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const index = state.resourceIndex.user ? state.resourceIndex.user[ownProps.userid] : undefined
-  const data = index !== undefined ? state.api.user.data[index] : null
+  const index = state.resourceIndex.users ? state.resourceIndex.users[ownProps.userid] : undefined
+  const data = index !== undefined ? state.api.users.data[index] : null
   return {
     data
   }

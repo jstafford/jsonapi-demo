@@ -38,7 +38,7 @@ jsonapiServer.define({
       ))
       .description('The rows of the dataset')
       .example('[["Chongqing","China",30165500],["Shanghai","China",24256800],["Delhi","India",21678794]]'),
-    owner: jsonapiServer.Joi.one('user')
+    owner: jsonapiServer.Joi.one('users')
       .description('The user who controls this dataset'),
   },
   examples: [
@@ -57,7 +57,7 @@ jsonapiServer.define({
         ['Delhi','India',21678794],
       ],
       owner: {
-        type: 'user',
+        type: 'users',
         id: '42D2F0C8-407D-48DB-A944-D6D68D28DE2A',
       }
     },
@@ -87,7 +87,7 @@ jsonapiServer.define({
         [5,0,'Finland',7.469,0.056,1.444,1.540,0.809,0.618,0.245,0.383,2.430],
       ],
       owner: {
-        type: 'user',
+        type: 'users',
         id: '42D2F0C8-407D-48DB-A944-D6D68D28DE2A',
       }
     }

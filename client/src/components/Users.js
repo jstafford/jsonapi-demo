@@ -26,7 +26,7 @@ class UsersRender extends Component<{
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const users = state.api.user ? state.api.user.data : null
+  const users = state.api.users ? state.api.users.data : null
   return {
     users
   }
@@ -34,7 +34,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   getUsers: () => {
-    dispatch(readEndpoint('user?include=datasets'))
+    dispatch(readEndpoint('users?include=datasets'))
   }
 })
 
