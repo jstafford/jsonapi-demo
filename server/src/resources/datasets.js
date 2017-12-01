@@ -22,7 +22,7 @@ jsonapiServer.define({
   handlers: datasetHandler,
   searchParams: {},
   attributes: {
-    title: jsonapiServer.Joi.string().required()
+    title: jsonapiServer.Joi.string()
       .description('The dataset title')
       .example('World’s Larget Cities'),
     columns: jsonapiServer.Joi.array().items(jsonapiServer.Joi.object().keys({
@@ -31,11 +31,11 @@ jsonapiServer.define({
       .description('Definition for the columns of the dataset')
       .example('[{"title":"City"},{"title":"Nation"},{"title":"Population"}]'),
     rows: jsonapiServer.Joi.array().items(jsonapiServer.Joi.array().items(
-        jsonapiServer.Joi.string(),
+        jsonapiServer.Joi.string().allow(null),
         jsonapiServer.Joi.number(),
         jsonapiServer.Joi.date(),
         jsonapiServer.Joi.boolean()
-      ))
+      ).sparse(true)).sparse(true)
       .description('The rows of the dataset')
       .example('[["Chongqing","China",30165500],["Shanghai","China",24256800],["Delhi","India",21678794]]'),
     owner: jsonapiServer.Joi.one('users')
