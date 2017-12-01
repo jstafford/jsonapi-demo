@@ -1,5 +1,6 @@
 'use strict'
 
-const jsonapiServer = require('jsonapi-server')
+const jsonapiStoreRelationaldb = require('jsonapi-store-relationaldb')
+const config = require('../config')
 
-module.exports = new jsonapiServer.MemoryHandler()
+module.exports = new jsonapiStoreRelationaldb(config)
