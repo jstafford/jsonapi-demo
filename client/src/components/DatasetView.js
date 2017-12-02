@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {updateResource} from 'redux-json-api'
+import {readEndpoint, updateResource} from 'redux-json-api'
 import dataset from '../dataset'
-import {ensureResource, generatePatch} from '../resourceIndexMiddleware'
+import {generatePatch} from '../resourceIndexMiddleware'
 import Cell from './Cell'
 import HeaderRow from './HeaderRow'
 import Row from './Row'
@@ -34,7 +34,7 @@ class DatasetViewRender extends Component<{
     const {data} = this.props
     if (data) {
       const columns = data.attributes.columns
-      const rows = data.attributes.rows
+      const rows = data.relationships.rows.data
       return (
         <table
           style={{
@@ -55,7 +55,7 @@ class DatasetViewRender extends Component<{
               verticalAlign: 'middle',
             }}>
             {columns && <HeaderRow columns={columns} valueAtPathChanged={this.valueAtPathChanged}/>}
-            {rows && rows.map((row, index) => (<Row key={index} rowNum={index} row={row} valueAtPathChanged={this.valueAtPathChanged}/>))}
+            {rows && rows.map((row, index) => (<Row key={row.id} rowid={row.id}/>))}
           </tbody>
         </table>
       )
@@ -78,7 +78,7 @@ const mapState = (state: GenericMap, ownProps: Object): Object => {
 const mapDisp = (dispatch: Dispatch<Action>, ownProps: Object): Object => (
   {
     ensureDataset: (id: string): void => {
-      dispatch(ensureResource({type:'datasets', id}))
+      dispatch(readEndpoint(`datasets/${id}?include=rows`))
     },
     resourceChanged: (data: dataset, path: string, newValue: string): void => {
       // console.log(`path: ${path}, value: ${newValue}`)

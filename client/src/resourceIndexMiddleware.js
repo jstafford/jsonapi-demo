@@ -1,5 +1,4 @@
-import invariant from 'invariant'
-import {isArray, isObject, toNumber} from 'lodash'
+import {isArray, isObject} from 'lodash'
 import {createAction} from 'redux-actions'
 import {readEndpoint} from 'redux-json-api'
 import warning from 'warning'
@@ -66,21 +65,6 @@ export const generatePatch = (original: resource, path: string, newValue: string
       if (sourceObj.hasOwnProperty(pathPart)) {
         sourceObj = sourceObj[pathPart]
         if (isObject(sourceObj)) {
-          // if (isArray(targetObj)) {
-          //   const position = toNumber(pathPart)
-          //   invariant(position < Number.MAX_SAFE_INTEGER, `partPart in Array is not a valid Number: ${pathPart}`)
-          //   // fill array with undefined up to position
-          //   let i = 0
-          //   while (i<position) {
-          //     targetObj[i] = undefined
-          //   }
-          //   if (isArray(sourceObj)) {
-          //     targetObj[position] = []
-          //   } else {
-          //     targetObj[position] = {}
-          //   }
-          //   targetObj = targetObj[position]
-          // } else {
             if (isArray(sourceObj)) {
               targetObj[pathPart] = []
             } else {
