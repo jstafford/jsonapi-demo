@@ -3,18 +3,6 @@
 const jsonapiServer = require('jsonapi-server')
 const datasetHandler = require('../handlers/datasetHandler.js')
 
-// const column = jsonapiServer.Joi.object().keys({
-//   title: jsonapiServer.Joi.string()
-// })
-//
-// const row = jsonapiServer.Joi.array().items(
-//   jsonapiServer.Joi.string(),
-//   jsonapiServer.Joi.number(),
-//   jsonapiServer.Joi.date(),
-//   jsonapiServer.Joi.boolean()
-// )
-//
-
 jsonapiServer.define({
   namespace: 'json:api',
   resource: 'datasets',
