@@ -1,5 +1,5 @@
 'use strict'
 
-const jsonapiServer = require('jsonapi-server')
+const PatchMemoryHandler = require('./PatchMemoryHandler')
 
-module.exports = new jsonapiServer.MemoryHandler()
+module.exports = new PatchMemoryHandler()
