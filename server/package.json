@@ -6,8 +6,8 @@
   "author": "Jason Stafford <jason.stafford@scrycollective.com>",
   "license": "MIT",
   "dependencies": {
+    "debug": "^3.1.0",
     "jsonapi-server": "^4.1.1",
-    "jsonapi-store-relationaldb": "^4.0.0",
     "pg": "^7.4.0"
   },
   "devDependencies": {
@@ -21,6 +21,9 @@
     "env": {
       "es6": true,
       "node": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 8
     }
   }
 }

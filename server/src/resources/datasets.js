@@ -3,18 +3,6 @@
 const jsonapiServer = require('jsonapi-server')
 const datasetHandler = require('../handlers/datasetHandler.js')
 
-// const column = jsonapiServer.Joi.object().keys({
-//   title: jsonapiServer.Joi.string()
-// })
-//
-// const row = jsonapiServer.Joi.array().items(
-//   jsonapiServer.Joi.string(),
-//   jsonapiServer.Joi.number(),
-//   jsonapiServer.Joi.date(),
-//   jsonapiServer.Joi.boolean()
-// )
-//
-
 jsonapiServer.define({
   namespace: 'json:api',
   resource: 'datasets',
@@ -27,7 +15,7 @@ jsonapiServer.define({
       .example('World’s Larget Cities'),
     columns: jsonapiServer.Joi.array().items(jsonapiServer.Joi.object().keys({
         title: jsonapiServer.Joi.string()
-      }))
+      }).allow(null))
       .description('Definition for the columns of the dataset')
       .example('[{"title":"City"},{"title":"Nation"},{"title":"Population"}]'),
     rows: jsonapiServer.Joi.many('rows')

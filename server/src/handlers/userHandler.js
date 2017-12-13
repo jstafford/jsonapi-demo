@@ -1,6 +1,5 @@
 'use strict'
 
-const jsonapiStoreRelationaldb = require('jsonapi-store-relationaldb')
-const config = require('../config')
+const PatchMemoryHandler = require('./PatchMemoryHandler')
 
-module.exports = new jsonapiStoreRelationaldb(config)
+module.exports = new PatchMemoryHandler()
