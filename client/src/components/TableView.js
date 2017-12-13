@@ -36,7 +36,7 @@ class TableViewRender extends Component<{
   render() {
     const {data, owner} = this.props
     if (data) {
-      const columns = data.attributes.columns
+      const fields = data.attributes.fields
       const rows = data.attributes.rows
       return (
         <div>
@@ -59,7 +59,7 @@ class TableViewRender extends Component<{
                 textAlign: 'center',
                 verticalAlign: 'middle',
               }}>
-              {columns && <HeaderRow columns={columns} valueAtPathChanged={this.valueAtPathChanged}/>}
+              {fields && <HeaderRow fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>}
               {rows && rows.map((row, index) => (<Row key={index} rowNum={index} row={row} valueAtPathChanged={this.valueAtPathChanged}/>))}
             </tbody>
           </table>

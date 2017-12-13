@@ -6,17 +6,17 @@ const tablesHandler = require('../handlers/tablesHandler.js')
 jsonapiServer.define({
   namespace: 'json:api',
   resource: 'tables',
-  description: 'Represents the rows and columns of one table.',
+  description: 'Represents the rows and fields of one table.',
   handlers: tablesHandler,
   searchParams: {},
   attributes: {
     title: jsonapiServer.Joi.string()
       .description('The table title')
       .example('World’s Larget Cities'),
-    columns: jsonapiServer.Joi.array().items(jsonapiServer.Joi.object().keys({
+    fields: jsonapiServer.Joi.array().items(jsonapiServer.Joi.object().keys({
         title: jsonapiServer.Joi.string()
       }).allow(null))
-      .description('Definition for the columns of the table')
+      .description('Definition for the fields of the table')
       .example('[{"title":"City"},{"title":"Nation"},{"title":"Population"}]'),
     rows: jsonapiServer.Joi.array().items(jsonapiServer.Joi.array().items(
         jsonapiServer.Joi.string().allow(null),
@@ -34,7 +34,7 @@ jsonapiServer.define({
       id: 'A2930D1F-BB4B-4AA3-8A77-6752A17D3A38',
       type: 'tables',
       title: 'World’s Larget Cities',
-      columns: [
+      fields: [
         {title: 'City'},
         {title: 'Nation'},
         {title: 'Population'},
@@ -53,7 +53,7 @@ jsonapiServer.define({
       id: 'F6E7A2B8-F522-411F-BA1E-C28AB85A4E7C',
       type: 'tables',
       title: '2017 World Happiness Report',
-      columns: [
+      fields: [
         {title: 'Overall Rank'},
         {title: 'Change in rank'},
         {title: 'Country'},
