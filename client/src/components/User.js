@@ -15,7 +15,7 @@ class UserRender extends Component<{
         ? data.relationships.tables.data
         : null
       return (
-        <li><Link to={`/user/${data.id}`}>{data.attributes.username}</Link>
+        <li><Link to={`/user/${data.id}`}>{data.attributes.name}</Link>
           {tables && <ul>{tables.map(table => (
             <TableSummary key={table.id} tableid={table.id}/>
           ))}</ul>}

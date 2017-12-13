@@ -40,7 +40,7 @@ class TableViewRender extends Component<{
       const rows = data.attributes.rows
       return (
         <div>
-          <Link to={`/user/${owner.id}`}>{owner.attributes.username}</Link>
+          <Link to={`/user/${owner.id}`}>{owner.attributes.name}</Link>
           <table
             style={{
               borderCollapse: 'collapse',
