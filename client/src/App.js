@@ -4,7 +4,7 @@ import {
   Route,
   Switch,
 }                         from 'react-router-dom'
-import DatasetView from './components/DatasetView'
+import TableView from './components/TableView'
 import UserView from './components/UserView'
 import Users from './components/Users'
 
@@ -15,7 +15,7 @@ class App extends Component {
         <Switch>
           <Route exact path="/" component={Users} />
           <Route path="/user/:userid" component={UserView} />
-          <Route path="/dataset/:datasetid" component={DatasetView} />
+          <Route path="/table/:tableid" component={TableView} />
         </Switch>
       </Router>
     )

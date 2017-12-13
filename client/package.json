@@ -21,6 +21,7 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "build": "react-scripts build",
+    "lint": "eslint src/",
     "start": "react-scripts start",
     "test": "react-scripts test --env=jsdom"
   },

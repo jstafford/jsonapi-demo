@@ -1,17 +1,17 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
-import dataset from '../dataset'
+import table from '../table'
 
-class DatasetRender extends Component<{
-  datasetid: string,
-  data: dataset,
+class TableRender extends Component<{
+  tableid: string,
+  data: table,
 }> {
   render() {
     const {data} = this.props
     if (data) {
       return (
-        <li><Link to={`/dataset/${data.id}`}>{data.attributes.title}</Link></li>
+        <li><Link to={`/table/${data.id}`}>{data.attributes.title}</Link></li>
       )
     } else {
       return null
@@ -20,13 +20,13 @@ class DatasetRender extends Component<{
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const index = state.resourceIndex.tables ? state.resourceIndex.tables[ownProps.datasetid] : undefined
+  const index = state.resourceIndex.tables ? state.resourceIndex.tables[ownProps.tableid] : undefined
   const data = index !== undefined ? state.api.tables.data[index] : null
   return {
     data
   }
 }
 
-const Dataset = connect(mapStateToProps, null)(DatasetRender)
+const Table = connect(mapStateToProps, null)(TableRender)
 
-export default Dataset
+export default Table

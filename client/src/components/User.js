@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import user from '../user'
-import Dataset from './Dataset'
+import TableSummary from './TableSummary'
 
 class UserRender extends Component<{
   data: user,
@@ -16,8 +16,8 @@ class UserRender extends Component<{
         : null
       return (
         <li><Link to={`/user/${data.id}`}>{data.attributes.username}</Link>
-          {tables && <ul>{tables.map(dataset => (
-            <Dataset key={dataset.id} datasetid={dataset.id}/>
+          {tables && <ul>{tables.map(table => (
+            <TableSummary key={table.id} tableid={table.id}/>
           ))}</ul>}
         </li>
       )
