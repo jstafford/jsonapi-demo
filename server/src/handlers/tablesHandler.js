@@ -1,5 +1,9 @@
 'use strict'
 
-const PatchMemoryHandler = require('./PatchMemoryHandler')
+const config = require('../config')
 
-module.exports = new PatchMemoryHandler()
+const PostgresHandler = require('./PostgresHandler')
+
+const tablesHandler = new PostgresHandler(config)
+
+module.exports = tablesHandler

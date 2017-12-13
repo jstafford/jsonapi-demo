@@ -36,6 +36,15 @@ const getPool = () => {
   return connectionPool
 }
 
+const initPool = async (config) => {
+  const pool = new pg.Pool(config)
+  // must register an error handler to avoid an uncaught error that could shut down the server
+  pool.on('error', poolErrorLogger)
+  const client = await pool.connect()
+  client.release()
+  // Save connection pool for reuse everywhere and log
+  connectionPool = pool
+}
 
 /**
   initialise gets invoked once for each resource that uses this hander.
@@ -43,19 +52,10 @@ const getPool = () => {
  */
 PostgresHandler.prototype.initialise = async function (resourceConfig) {
   if (!connectionPool) {
-    if (!connectionPoolInitializing) {
-      connectionPoolPromise = new Promise()
-      const pool = new pg.Pool(options)
-      // must register an error handler to avoid an uncaught error that could shut down the server
-      pool.on('error', poolErrorLogger)
-      const client = await pool.connect()
-      client.release()
-      // Save connection pool for reuse everywhere and log
-      connectionPool = pool
-      connectionPoolPromise.resolve()
-    } else {
-      await connectionPoolPromise
+    if (!connectionPoolPromise) {
+      connectionPoolPromise = initPool(this.config)
     }
+    await connectionPoolPromise
   }
   knownTypes[resourceConfig.resource] = true
   this.ready = true
@@ -65,8 +65,24 @@ PostgresHandler.prototype.initialise = async function (resourceConfig) {
   Search for a list of resources, given a resource type.
  */
 PostgresHandler.prototype.search = async function (request, callback) {
-  logger('err', JSON.stringify(request))
-  return callback(null, [], 0)
+  if (knownTypes.hasOwnProperty(request.params.type)) {
+    const query = `SELECT data FROM ${request.params.type} LIMIT $1 OFFSET $2;`
+    const pool = getPool()
+    const response = await pool.query(query, [request.params.page.limit, request.params.page.offset])
+    if (response && response.rows) {
+      const resources = response.rows.map(row => (row.data))
+      // Return the requested resources
+      return callback(null, resources, resources.length)
+    }
+    return callback(null, [], 0)
+  } else {
+    return callback({
+      status: '400',
+      code: 'EBADREQUEST',
+      title: 'Requested resource type does not exist',
+      detail: `There is no resource type "${request.params.type}"`
+    })
+  }
 }
 
 /**

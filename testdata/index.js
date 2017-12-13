@@ -68,6 +68,11 @@ const dataGenerators = {
 }
 
 const users = {
+  type: {
+    function: function() {
+      return 'users'
+    }
+  },
   id: {
     faker: 'random.uuid'
   },
@@ -84,6 +89,11 @@ const users = {
   }
 };
 const tables = {
+  type: {
+    function: function() {
+      return 'tables'
+    }
+  },
   id: {
     faker: 'random.uuid'
   },
@@ -129,8 +139,14 @@ const tables = {
   owner: {
     function: function() {
       const owner = this.faker.random.arrayElement(this.db.users)
-      owner.tables.push(this.object.id)
-      return owner.id
+      owner.tables.push({
+        type: 'tables',
+        id: this.object.id
+      })
+      return {
+        type: 'users',
+        id: owner.id
+      }
     }
   }
 };
