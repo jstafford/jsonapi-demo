@@ -20,8 +20,8 @@ class DatasetRender extends Component<{
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const index = state.resourceIndex.datasets ? state.resourceIndex.datasets[ownProps.datasetid] : undefined
-  const data = index !== undefined ? state.api.datasets.data[index] : null
+  const index = state.resourceIndex.tables ? state.resourceIndex.tables[ownProps.datasetid] : undefined
+  const data = index !== undefined ? state.api.tables.data[index] : null
   return {
     data
   }

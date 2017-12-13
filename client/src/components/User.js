@@ -11,12 +11,12 @@ class UserRender extends Component<{
   render() {
     const {data} = this.props
     if (data) {
-      const datasets = data.relationships && data.relationships.datasets && data.relationships.datasets.data
-        ? data.relationships.datasets.data
+      const tables = data.relationships && data.relationships.tables && data.relationships.tables.data
+        ? data.relationships.tables.data
         : null
       return (
         <li><Link to={`/user/${data.id}`}>{data.attributes.username}</Link>
-          {datasets && <ul>{datasets.map(dataset => (
+          {tables && <ul>{tables.map(dataset => (
             <Dataset key={dataset.id} datasetid={dataset.id}/>
           ))}</ul>}
         </li>

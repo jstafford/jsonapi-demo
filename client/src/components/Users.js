@@ -34,7 +34,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
   getUsers: () => {
-    dispatch(readEndpoint('users?include=datasets'))
+    dispatch(readEndpoint('users?include=tables'))
   }
 })
 

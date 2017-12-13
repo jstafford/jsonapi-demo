@@ -67,8 +67,8 @@ class DatasetViewRender extends Component<{
 
 const mapState = (state: GenericMap, ownProps: Object): Object => {
   const datasetid = ownProps.match.params.datasetid
-  const index = datasetid && state.resourceIndex.datasets ? state.resourceIndex.datasets[datasetid] : undefined
-  const data = index !== undefined ? state.api.datasets.data[index] : null
+  const index = datasetid && state.resourceIndex.tables ? state.resourceIndex.tables[datasetid] : undefined
+  const data = index !== undefined ? state.api.tables.data[index] : null
   return {
     datasetid,
     data
@@ -78,7 +78,7 @@ const mapState = (state: GenericMap, ownProps: Object): Object => {
 const mapDisp = (dispatch: Dispatch<Action>, ownProps: Object): Object => (
   {
     ensureDataset: (id: string): void => {
-      dispatch(ensureResource({type:'datasets', id}))
+      dispatch(ensureResource({type:'tables', id}))
     },
     resourceChanged: (data: dataset, path: string, newValue: string): void => {
       // console.log(`path: ${path}, value: ${newValue}`)

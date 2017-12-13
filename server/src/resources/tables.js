@@ -1,22 +1,22 @@
 'use strict'
 
 const jsonapiServer = require('jsonapi-server')
-const datasetHandler = require('../handlers/datasetHandler.js')
+const tablesHandler = require('../handlers/tablesHandler.js')
 
 jsonapiServer.define({
   namespace: 'json:api',
-  resource: 'datasets',
-  description: 'Represents the rows and columns of one dataset.',
-  handlers: datasetHandler,
+  resource: 'tables',
+  description: 'Represents the rows and columns of one table.',
+  handlers: tablesHandler,
   searchParams: {},
   attributes: {
     title: jsonapiServer.Joi.string()
-      .description('The dataset title')
+      .description('The table title')
       .example('World’s Larget Cities'),
     columns: jsonapiServer.Joi.array().items(jsonapiServer.Joi.object().keys({
         title: jsonapiServer.Joi.string()
       }).allow(null))
-      .description('Definition for the columns of the dataset')
+      .description('Definition for the columns of the table')
       .example('[{"title":"City"},{"title":"Nation"},{"title":"Population"}]'),
     rows: jsonapiServer.Joi.array().items(jsonapiServer.Joi.array().items(
         jsonapiServer.Joi.string().allow(null),
@@ -24,15 +24,15 @@ jsonapiServer.define({
         jsonapiServer.Joi.date(),
         jsonapiServer.Joi.boolean()
       ).sparse(true)).sparse(true)
-      .description('The rows of the dataset')
+      .description('The rows of the table')
       .example('[["Chongqing","China",30165500],["Shanghai","China",24256800],["Delhi","India",21678794]]'),
     owner: jsonapiServer.Joi.one('users')
-      .description('The user who controls this dataset'),
+      .description('The user who controls this table'),
   },
   examples: [
     {
       id: 'A2930D1F-BB4B-4AA3-8A77-6752A17D3A38',
-      type: 'datasets',
+      type: 'tables',
       title: 'World’s Larget Cities',
       columns: [
         {title: 'City'},
@@ -51,7 +51,7 @@ jsonapiServer.define({
     },
     {
       id: 'F6E7A2B8-F522-411F-BA1E-C28AB85A4E7C',
-      type: 'datasets',
+      type: 'tables',
       title: '2017 World Happiness Report',
       columns: [
         {title: 'Overall Rank'},
