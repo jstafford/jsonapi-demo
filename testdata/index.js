@@ -1,4 +1,5 @@
 const mocker = require('mocker-data-generator').default
+const pg = require('pg')
 
 const validTypes = [
   'string',
@@ -14,15 +15,27 @@ const validTypes = [
 ]
 
 const dataGenerators = {
-  string: (faker) => {return faker.random.words()},
-  number: (faker) => {
-    const precision = 1/Math.pow(10, Math.floor(Math.random() * 4))
-    return faker.random.number({max: 999999, 
-    min: -999999, 
-    precision: precision})
+  string: (faker) => {
+    return faker.random.words()
   },
-  integer: (faker) => {return faker.random.number({max: 999999, min: -999999, precision: 1})},
-  boolean: (faker) => {return faker.random.boolean()},
+  number: (faker) => {
+    const precision = 1 / Math.pow(10, Math.floor(Math.random() * 4))
+    return faker.random.number({
+      max: 999999,
+      min: -999999,
+      precision: precision
+    })
+  },
+  integer: (faker) => {
+    return faker.random.number({
+      max: 999999,
+      min: -999999,
+      precision: 1
+    })
+  },
+  boolean: (faker) => {
+    return faker.random.boolean()
+  },
   date: (faker) => {
     const date = faker.date.between(new Date(1680, 0, 1), new Date(2099, 11, 31))
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -49,21 +62,23 @@ const dataGenerators = {
     const month = String(date.getMonth() + 1).padStart(2, '0')
     return `${date.getFullYear()}-${month}`
   },
-  geopoint: (faker) => {return `${faker.address.longitude()}, ${faker.address.latitude()}`}
+  geopoint: (faker) => {
+    return `${faker.address.longitude()}, ${faker.address.latitude()}`
+  }
 }
 
-const user = {
+const users = {
   id: {
     faker: 'random.uuid'
   },
-  username: {
+  name: {
     faker: 'internet.userName'
   },
   createdAt: {
     faker: 'date.past'
   }
 };
-const table = {
+const tables = {
   id: {
     faker: 'random.uuid'
   },
@@ -91,7 +106,7 @@ const table = {
       for (let i = 0; i < numFields; i++) {
         const type = this.object.fields[i].type
         const value = dataGenerators[type](this.faker)
-        row.push(value) 
+        row.push(value)
       }
       return row
     },
@@ -100,16 +115,62 @@ const table = {
   }],
   owner: {
     function: function() {
-      return this.faker.random.arrayElement(this.db.user).id
+      return this.faker.random.arrayElement(this.db.users).id
     }
   }
 };
 
+
+const poolErrorLogger = (err, client) => {
+  console.error(err)
+}
+
+const writeData = async (data) => {
+  try {
+    // console.log(JSON.stringify(data, null, 2))
+    // return
+
+    const options = {
+      host: 'localhost',
+      port: 5432,
+      user: 'jsonapi',
+      password: 'jsonapi',
+      database: 'jsonapi'
+    }
+    const pool = new pg.Pool(options)
+
+    pool.on('error', poolErrorLogger)
+    const client = await pool.connect()
+    client.release()
+
+    // create tables
+    await pool.query('CREATE TABLE IF NOT EXISTS users (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
+    await pool.query('CREATE INDEX IF NOT EXISTS users_data_idx ON users USING gin(data jsonb_path_ops);')
+
+    await pool.query('CREATE TABLE IF NOT EXISTS tables (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
+    await pool.query('CREATE INDEX IF NOT EXISTS tables_data_idx ON tables USING gin(data jsonb_path_ops);')
+
+    await Promise.all(data.users.map(async (user) => {
+      await pool.query('INSERT INTO users (id, data ) VALUES($1, $2);', [user.id, JSON.stringify(user)])
+      console.log(`saved user ${user.name}`)
+    }));
+
+    await Promise.all(data.tables.map(async (table) => {
+      await pool.query('INSERT INTO tables (id, data ) VALUES($1, $2);', [table.id, JSON.stringify(table)])
+      console.log(`saved table ${table.title}`)
+    }));
+
+  } catch (err) {
+    throw err
+  }
+
+
+
+}
+
 mocker()
-  .schema('user', user, 10)
-  .schema('table', table, 1)
+  .schema('users', users, 20)
+  .schema('tables', tables, 200)
   .build()
-  .then(data => {
-    console.log(JSON.stringify(data, null, 2))
-    console.log('done')
-  }, err => console.error(err))
+  .then(writeData, err => console.error(err))
+  .then(console.log('done'), err => console.error(err))
