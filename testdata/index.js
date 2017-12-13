@@ -76,6 +76,11 @@ const users = {
   },
   createdAt: {
     faker: 'date.past'
+  },
+  tables: {
+    function: function() {
+      return []
+    }
   }
 };
 const tables = {
@@ -83,15 +88,23 @@ const tables = {
     faker: 'random.uuid'
   },
   title: {
-    faker: 'random.words'
+    function: function() {
+      const randomWords = this.faker.random.words().toLowerCase()
+      const title = randomWords.replace(/^(.)|\s(.)/g, ($1) => $1.toUpperCase())
+      return title
+    }
   },
   description: {
     faker: 'lorem.sentence'
   },
   fields: [{
     function: function() {
+      const randomWord = this.faker.random.word().toLowerCase()
+      const name = this.faker.helpers.slugify(randomWord)
+      const title = randomWord.replace(/^(.)|\s(.)/g, ($1) => $1.toUpperCase())
       return {
-        name: this.faker.random.word(),
+        name: name,
+        title: title,
         description: this.faker.lorem.sentence(),
         type: this.faker.random.arrayElement(validTypes)
       }
@@ -115,7 +128,9 @@ const tables = {
   }],
   owner: {
     function: function() {
-      return this.faker.random.arrayElement(this.db.users).id
+      const owner = this.faker.random.arrayElement(this.db.users)
+      owner.tables.push(this.object.id)
+      return owner.id
     }
   }
 };

@@ -13,8 +13,14 @@ jsonapiServer.define({
     title: jsonapiServer.Joi.string()
       .description('The table title')
       .example('World’s Larget Cities'),
+    description: jsonapiServer.Joi.string()
+      .description('A concise description of the tabe.')
+      .example('List of largest cites using the city proper administrative boundaries to determine population.'),
     fields: jsonapiServer.Joi.array().items(jsonapiServer.Joi.object().keys({
-        title: jsonapiServer.Joi.string()
+        name: jsonapiServer.Joi.string(),
+        title: jsonapiServer.Joi.string(),
+        description: jsonapiServer.Joi.string(),
+        type: jsonapiServer.Joi.string().allow('string', 'number', 'integer', 'boolean', 'date', 'time', 'datetime', 'year', 'yearmonth', 'geopoint')
       }).allow(null))
       .description('Definition for the fields of the table')
       .example('[{"title":"City"},{"title":"Nation"},{"title":"Population"}]'),

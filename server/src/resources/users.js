@@ -10,7 +10,9 @@ jsonapiServer.define({
   handlers: usersHandler,
   searchParams: { },
   attributes: {
-    name: jsonapiServer.Joi.string().regex(/^[A-Za-z]+[-0-9A-Z_a-z]+[0-9A-Za-z]+$/)
+    createdAt: jsonapiServer.Joi.date(),
+    // name: jsonapiServer.Joi.string().regex(/^[A-Za-z]+[-0-9A-Z_a-z]+[0-9A-Za-z]+$/)
+    name: jsonapiServer.Joi.string()
       .description('The user’s public username')
       .example('yertle-the-turtle'),
     tables: jsonapiServer.Joi.many('tables')
