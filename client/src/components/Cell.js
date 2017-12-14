@@ -37,6 +37,7 @@ class Cell extends Component<{
           fontSize: 'inherit',
           fontWeight: 'inherit',
           border: 'none',
+          width: '100%'
         }}
         onBlur={onBlur}
       />

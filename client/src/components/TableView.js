@@ -54,12 +54,12 @@ class TableViewRender extends Component<{
               }}>
               <Cell value={data.attributes.title} valueChanged={this.titleChanged}/>
             </caption>
+            {fields && <HeaderRow fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>}
             <tbody
               style={{
-                textAlign: 'center',
+                textAlign: 'left',
                 verticalAlign: 'middle',
               }}>
-              {fields && <HeaderRow fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>}
               {rows && rows.map((row, index) => (<Row key={index} rowNum={index} row={row} valueAtPathChanged={this.valueAtPathChanged}/>))}
             </tbody>
           </table>
