@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {readEndpoint} from 'redux-json-api'
-import User from './User'
+import UserSummary from './UserSummary'
 import user from '../user'
 
 class UsersRender extends Component<{
@@ -18,7 +18,7 @@ class UsersRender extends Component<{
     return (
       <ul>
         {users && users.map(user => (
-          <User key={user.id} userid={user.id}/>
+          <UserSummary key={user.id} userid={user.id}/>
         ))}
       </ul>
     );

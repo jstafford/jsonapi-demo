@@ -1,9 +1,12 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
+import {Link} from 'react-router-dom'
 import {ensureResource} from '../resourceIndexMiddleware'
-import User from './User'
+import user from '../user'
+import TableSummary from './TableSummary'
 
 class UserViewRender extends Component<{
+  data: user,
   userid : String,
   ensureUser : (id:string) => void
 }> {
@@ -15,10 +18,25 @@ class UserViewRender extends Component<{
   }
 
   render() {
-    const {userid} = this.props
-    if (userid) {
+    const {data} = this.props
+    if (data) {
+      const tables = data.relationships && data.relationships.tables && data.relationships.tables.data
+        ? data.relationships.tables.data
+        : null
       return (
-        <User userid={userid}/>
+        <div>
+          <Link to={'/'}>All Users</Link>
+          <h1>{data.attributes.name}</h1>
+          <ul>
+            <li>Tables</li>
+            <ul>
+              {tables && tables.map(table => (
+                <TableSummary key={table.id} tableid={table.id}/>
+              ))}
+            </ul>
+          </ul>
+
+        </div>
       )
     } else {
       return null
@@ -27,8 +45,12 @@ class UserViewRender extends Component<{
 }
 
 const mapState = (state: GenericMap, ownProps: Object): Object => {
+  const userid = ownProps.match.params.userid
+  const index = state.resourceIndex.users ? state.resourceIndex.users[userid] : undefined
+  const data = index !== undefined ? state.api.users.data[index] : null
   return {
-    userid: ownProps.match.params.userid,
+    data,
+    userid,
   }
 }
 

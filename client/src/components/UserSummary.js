@@ -2,23 +2,24 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import user from '../user'
-import TableSummary from './TableSummary'
 
-class UserRender extends Component<{
+class UserSummaryRender extends Component<{
   data: user,
   userid: string,
 }> {
   render() {
     const {data} = this.props
     if (data) {
-      const tables = data.relationships && data.relationships.tables && data.relationships.tables.data
-        ? data.relationships.tables.data
-        : null
+      const numTables = data.relationships && data.relationships.tables && data.relationships.tables.data
+        ? data.relationships.tables.data.length
+        : 0
       return (
-        <li><Link to={`/user/${data.id}`}>{data.attributes.name}</Link>
-          {tables && <ul>{tables.map(table => (
-            <TableSummary key={table.id} tableid={table.id}/>
-          ))}</ul>}
+        <li><Link to={`/user/${data.id}`}>{data.attributes.name}</Link><br />
+          <span style={{
+            fontSize: 'small',
+          }}>
+            Tables: {numTables} Member Since: {data.attributes.createdAt}
+          </span>
         </li>
       )
     } else {
@@ -35,6 +36,6 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const User = connect(mapStateToProps, null)(UserRender)
+const UserSummary = connect(mapStateToProps, null)(UserSummaryRender)
 
-export default User
+export default UserSummary
