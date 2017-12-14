@@ -2,6 +2,7 @@
 const debug = require('debug')
 const _ = require('lodash')
 const pg = require('pg')
+const validator = require('validator')
 
 const logger = debug("jsonApi:store:postgres")
 
@@ -36,6 +37,46 @@ const getPool = () => {
   return connectionPool
 }
 
+const validateRequest = (request) => {
+  let errDetail = null
+  if (request.params) {
+    const params = request.params
+    if (!knownTypes.hasOwnProperty(params.type)) {
+      errDetail: `There is no resource type "${params.type}"`
+    }
+    if (!errDetail && params.id && !validator.isUUID(params.id)) {
+      errDetail: 'The parameter id must be a UUID.'
+    }
+    if (params.page) {
+      const page = params.page
+      if (!errDetail && page.limit && !_.isInteger(page.limit)) {
+        errDetail: 'The parameter page.limit must be an integer.'
+      }
+      if (!errDetail && page.limit && (page.limit < 1 || page.limit > 1000)) {
+        errDetail: 'The parameter page.limit must be in the range 1 to 1,000.'
+      }
+      if (!errDetail && page.offset && !_.isInteger(page.offset)) {
+        errDetail: 'The parameter page.offset must be an integer.'
+      }
+      if (!errDetail && page.offset && (page.offset < 0 || page.offset > Number.MAX_SAFE_INTEGER)) {
+        errDetail: 'The parameter page.limit must be in the range 1 to Number.MAX_SAFE_INTEGER.'
+      }
+    }
+  } else {
+    errDetail: 'No paramters supplied.'
+  }
+  if (errDetail) {
+    return {
+      status: '400',
+      code: 'EBADREQUEST',
+      title: 'Invalid request',
+      detail: errDetail
+    }
+  } else {
+    return null
+  }
+}
+
 const initPool = async (config) => {
   const pool = new pg.Pool(config)
   // must register an error handler to avoid an uncaught error that could shut down the server
@@ -65,105 +106,85 @@ PostgresHandler.prototype.initialise = async function (resourceConfig) {
   Search for a list of resources, given a resource type.
  */
 PostgresHandler.prototype.search = async function (request, callback) {
-  if (knownTypes.hasOwnProperty(request.params.type)) {
-    const query = `SELECT data FROM ${request.params.type} LIMIT $1 OFFSET $2;`
-    const pool = getPool()
-    const response = await pool.query(query, [request.params.page.limit, request.params.page.offset])
-    if (response && response.rows) {
-      const resources = response.rows.map(row => (row.data))
-      // Return the requested resources
-      return callback(null, resources, resources.length)
-    }
-    return callback(null, [], 0)
-  } else {
-    return callback({
-      status: '400',
-      code: 'EBADREQUEST',
-      title: 'Requested resource type does not exist',
-      detail: `There is no resource type "${request.params.type}"`
-    })
+  const err = validateRequest(request)
+  if (err) {
+    return callback(err)
   }
+  const query = `SELECT data FROM ${request.params.type} LIMIT $1 OFFSET $2;`
+  const pool = getPool()
+  const response = await pool.query(query, [request.params.page.limit, request.params.page.offset])
+  if (response && response.rows) {
+    const resources = response.rows.map(row => (row.data))
+    // Return the requested resources
+    return callback(null, resources, resources.length)
+  }
+  return callback(null, [], 0)
 }
 
 /**
   Find a specific resource, given a resource type and and id.
  */
 PostgresHandler.prototype.find = async function (request, callback) {
-  if (knownTypes.hasOwnProperty(request.params.type)) {
-    const query = `SELECT data FROM ${request.params.type} WHERE id=$1;`
-    const pool = getPool()
-    const response = await pool.query(query, [request.params.id])
-    if (response && response.rows && response.rows.length) {
-      const row = response.rows[0]
-      if (row && row.hasOwnProperty('data') && row.data) {
-        // Return the requested resource
-        return callback(null, row.data)
-      }
-    }
-    return callback({
-      status: '404',
-      code: 'ENOTFOUND',
-      title: 'Requested resource does not exist',
-      detail: `There is no ${request.params.type} with id ${request.params.id}`
-    })
-  } else {
-    return callback({
-      status: '400',
-      code: 'EBADREQUEST',
-      title: 'Requested resource type does not exist',
-      detail: `There is no resource type "${request.params.type}"`
-    })
+  const err = validateRequest(request)
+  if (err) {
+    return callback(err)
   }
+  const query = `SELECT data FROM ${request.params.type} WHERE id=$1;`
+  const pool = getPool()
+  const response = await pool.query(query, [request.params.id])
+  if (response && response.rows && response.rows.length) {
+    const row = response.rows[0]
+    if (row && row.hasOwnProperty('data') && row.data) {
+      // Return the requested resource
+      return callback(null, row.data)
+    }
+  }
+  return callback({
+    status: '404',
+    code: 'ENOTFOUND',
+    title: 'Requested resource does not exist',
+    detail: `There is no ${request.params.type} with id ${request.params.id}`
+  })
 }
 
 /**
   Create (store) a new resource given a resource type and an object.
  */
 PostgresHandler.prototype.create = async function (request, newResource, callback) {
-  if (knownTypes.hasOwnProperty(request.params.type)) {
-    const query = `INSERT INTO ${request.params.type} (id, data) VALUES($1, $2) RETURNING data;`
-    const pool = getPool()
-    const response = await pool.query(query, [newResource.id, JSON.stringify(newResource)])
-    if (response && response.rows && response.rows.length) {
-      const row = response.rows[0]
-      if (row && row.hasOwnProperty('data') && row.data) {
-        // Return the requested resource
-        return callback(null, row.data)
-      }
-    }
-    return callback({
-      status: '409',
-      code: 'ECONFLICT',
-      title: 'Requested resource already exists',
-      detail: `There is already a resource of type ${request.params.type} with id ${request.params.id}`
-    })
-  } else {
-    return callback({
-      status: '400',
-      code: 'EBADREQUEST',
-      title: 'Requested resource type does not exist',
-      detail: `There is no resource type "${request.params.type}"`
-    })
+  const err = validateRequest(request)
+  if (err) {
+    return callback(err)
   }
+  const query = `INSERT INTO ${request.params.type} (id, data) VALUES($1, $2) RETURNING data;`
+  const pool = getPool()
+  const response = await pool.query(query, [newResource.id, JSON.stringify(newResource)])
+  if (response && response.rows && response.rows.length) {
+    const row = response.rows[0]
+    if (row && row.hasOwnProperty('data') && row.data) {
+      // Return the requested resource
+      return callback(null, row.data)
+    }
+  }
+  return callback({
+    status: '409',
+    code: 'ECONFLICT',
+    title: 'Requested resource already exists',
+    detail: `There is already a resource of type ${request.params.type} with id ${request.params.id}`
+  })
 }
 
 /**
   Delete a resource, given a resource type and and id.
  */
 PostgresHandler.prototype.delete = async function (request, callback) {
-  if (knownTypes.hasOwnProperty(request.params.type)) {
-    const query = `DELETE FROM ${request.params.type} WHERE id = $1;`
-    const pool = getPool()
-    await pool.query(query, [request.params.id])
-    return callback()
-  } else {
-    return callback({
-      status: '400',
-      code: 'EBADREQUEST',
-      title: 'Requested resource type does not exist',
-      detail: `There is no resource type "${request.params.type}"`
-    })
+  const err = validateRequest(request)
+  if (err) {
+    return callback(err)
   }
+  const query = `DELETE FROM ${request.params.type} WHERE id = $1;`
+  const pool = getPool()
+  await pool.query(query, [request.params.id])
+  return callback()
 }
 
 /**
