@@ -23,9 +23,9 @@ class TableViewRender extends Component<{
     }
   }
 
-  titleChanged = (newValue) => {
+  attributeChanged = (newValue, attribute) => {
     const {data, resourceChanged} = this.props
-    resourceChanged(data, '/attributes/title', newValue)
+    resourceChanged(data, `/attributes/${attribute}`, newValue)
   }
 
   valueAtPathChanged = (path, newValue) => {
@@ -52,7 +52,13 @@ class TableViewRender extends Component<{
                 fontWeight: 'bold',
                 padding: '0.2em 0.4em',
               }}>
-              <Cell value={data.attributes.title} valueChanged={this.titleChanged}/>
+              <Cell value={data.attributes.title} valueChanged={newValue=>this.attributeChanged(newValue, 'title')}/>
+            </caption>
+            <caption
+              style={{
+                padding: '0.2em 0.4em',
+              }}>
+              <Cell value={data.attributes.description} valueChanged={newValue=>this.attributeChanged(newValue, 'description')}/>
             </caption>
             {fields && <HeaderRow fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>}
             <tbody
