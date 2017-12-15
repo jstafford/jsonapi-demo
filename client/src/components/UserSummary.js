@@ -10,15 +10,12 @@ class UserSummaryRender extends Component<{
   render() {
     const {data} = this.props
     if (data) {
-      const numTables = data.relationships && data.relationships.tables && data.relationships.tables.data
-        ? data.relationships.tables.data.length
-        : 0
       return (
         <li><Link to={`/user/${data.id}`}>{data.attributes.name}</Link><br />
           <span style={{
             fontSize: 'small',
           }}>
-            Tables: {numTables} Member Since: {data.attributes.createdAt}
+            ★: {data.attributes.stars} Tables: {data.attributes.tablesCount} Member Since: {data.attributes.joinDate}
           </span>
         </li>
       )

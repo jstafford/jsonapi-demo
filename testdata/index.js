@@ -79,14 +79,28 @@ const users = {
   name: {
     faker: 'internet.userName'
   },
-  createdAt: {
+  joinDate: {
     faker: 'date.past'
   },
   tables: {
     function: function() {
       return []
     }
-  }
+  },
+  tablesCount: {
+    function: function() {
+      return 0
+    }
+  },
+  stars: {
+    function: function() {
+      return this.faker.random.number({
+        max: 9999,
+        min: 0,
+        precision: 1
+      })
+    }
+  },
 };
 const tables = {
   type: {
@@ -143,12 +157,13 @@ const tables = {
         type: 'tables',
         id: this.object.id
       })
+      owner.tablesCount += 1
       return {
         type: 'users',
         id: owner.id
       }
     }
-  }
+  },
 };
 
 
@@ -200,8 +215,8 @@ const writeData = async (data) => {
 }
 
 mocker()
-  .schema('users', users, 20)
-  .schema('tables', tables, 200)
+  .schema('users', users, 200)
+  .schema('tables', tables, 2000)
   .build()
   .then(writeData, err => console.error(err))
   .then(console.log('done'), err => console.error(err))
