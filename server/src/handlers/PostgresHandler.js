@@ -110,7 +110,7 @@ PostgresHandler.prototype.search = async function(request, callback) {
   if (err) {
     return callback(err)
   }
-  let query = `SELECT data FROM ${request.params.type}`
+  let query = `SELECT data, count(*) OVER() AS full_count FROM ${request.params.type}`
   let values = []
   if (request.params.filter && request.params.filter.id) {
     const filter = request.params.filter
@@ -129,6 +129,12 @@ PostgresHandler.prototype.search = async function(request, callback) {
       query += ` = \$${values.length}`
     }
   }
+  if (request.params.sort) {
+    const dir = request.params.sort.charAt(0) === '-' ? 'DESC' : 'ASC'
+    const sortField = request.params.sort.replace('-', '')
+    values.push(sortField)
+    query += ` ORDER BY data->\$${values.length} ${dir}`
+  }
   if (request.params.page) {
     const page = request.params.page
     if (page.limit) {
@@ -145,8 +151,9 @@ PostgresHandler.prototype.search = async function(request, callback) {
   const response = await pool.query(query, values)
   if (response && response.rows) {
     const resources = response.rows.map(row => (row.data))
+    const total = (response.rows.length > 0) ? response.rows[0].full_count : 0
     // Return the requested resources
-    return callback(null, resources, resources.length)
+    return callback(null, resources, total)
   }
   return callback(null, [], 0)
 }
