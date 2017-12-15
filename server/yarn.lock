@@ -824,7 +824,7 @@ json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
 
-jsonapi-server@^4.1.1:
+jsonapi-server@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/jsonapi-server/-/jsonapi-server-4.1.2.tgz#fbe12a206591864e62e5ddafb74966381c1de6a5"
   dependencies:

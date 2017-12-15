@@ -13,7 +13,7 @@ let connectionPool = null
 // a singleton set of known types for validating requests against
 const knownTypes = {}
 
-const PostgresHandler = module.exports = function PostgresHandler (config) {
+const PostgresHandler = module.exports = function PostgresHandler(config) {
   this.config = config
 }
 
@@ -91,7 +91,7 @@ const initPool = async (config) => {
   initialise gets invoked once for each resource that uses this hander.
   In this instance, we're allocating an array in our in-memory data store.
  */
-PostgresHandler.prototype.initialise = async function (resourceConfig) {
+PostgresHandler.prototype.initialise = async function(resourceConfig) {
   if (!connectionPool) {
     if (!connectionPoolPromise) {
       connectionPoolPromise = initPool(this.config)
@@ -105,14 +105,44 @@ PostgresHandler.prototype.initialise = async function (resourceConfig) {
 /**
   Search for a list of resources, given a resource type.
  */
-PostgresHandler.prototype.search = async function (request, callback) {
+PostgresHandler.prototype.search = async function(request, callback) {
   const err = validateRequest(request)
   if (err) {
     return callback(err)
   }
-  const query = `SELECT data FROM ${request.params.type} LIMIT $1 OFFSET $2;`
+  let query = `SELECT data FROM ${request.params.type}`
+  let values = []
+  if (request.params.filter && request.params.filter.id) {
+    const filter = request.params.filter
+    query += ' WHERE id '
+    if (Array.isArray(filter.id)) {
+      let comma = ''
+      query += ' IN ('
+      filter.id.forEach(id => {
+        values.push(id)
+        query += `${comma}\$${values.length}`
+        comma = ', '
+      })
+      query += ')'
+    } else {
+      values.push(filter.id)
+      query += ` = \$${values.length}`
+    }
+  }
+  if (request.params.page) {
+    const page = request.params.page
+    if (page.limit) {
+      values.push(page.limit)
+      query += ` LIMIT \$${values.length}`
+    }
+    if (page.offset) {
+      values.push(page.offset)
+      query += ` OFFSET \$${values.length}`
+    }
+  }
+  query += ';'
   const pool = getPool()
-  const response = await pool.query(query, [request.params.page.limit, request.params.page.offset])
+  const response = await pool.query(query, values)
   if (response && response.rows) {
     const resources = response.rows.map(row => (row.data))
     // Return the requested resources
@@ -124,7 +154,7 @@ PostgresHandler.prototype.search = async function (request, callback) {
 /**
   Find a specific resource, given a resource type and and id.
  */
-PostgresHandler.prototype.find = async function (request, callback) {
+PostgresHandler.prototype.find = async function(request, callback) {
   const err = validateRequest(request)
   if (err) {
     return callback(err)
@@ -150,7 +180,7 @@ PostgresHandler.prototype.find = async function (request, callback) {
 /**
   Create (store) a new resource given a resource type and an object.
  */
-PostgresHandler.prototype.create = async function (request, newResource, callback) {
+PostgresHandler.prototype.create = async function(request, newResource, callback) {
   const err = validateRequest(request)
   if (err) {
     return callback(err)
@@ -176,7 +206,7 @@ PostgresHandler.prototype.create = async function (request, newResource, callbac
 /**
   Delete a resource, given a resource type and and id.
  */
-PostgresHandler.prototype.delete = async function (request, callback) {
+PostgresHandler.prototype.delete = async function(request, callback) {
   const err = validateRequest(request)
   if (err) {
     return callback(err)
@@ -205,7 +235,7 @@ const jsonApiPatchCustomizer = (objValue, srcValue, key, object, source, stack) 
   Update a resource, given a resource type and id, along with a partialResource.
   partialResource contains a subset of changes that need to be merged over the original.
  */
-PostgresHandler.prototype.update = function (request, partialResource, callback) {
+PostgresHandler.prototype.update = function(request, partialResource, callback) {
   // Find the requested resource
   this.find(request, async (err, theResource) => {
     if (err) {
