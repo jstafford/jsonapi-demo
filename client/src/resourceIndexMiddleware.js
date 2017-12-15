@@ -10,12 +10,44 @@ const INDEX_ENSURE_RESOURCE = 'INDEX_ENSURE_RESOURCE'
 export const ensureResource = createAction(INDEX_ENSURE_RESOURCE)
 
 const handleEnsureResource = (store, action) => {
-  const {type, id, params} = action.payload
+  const {type, id, include} = action.payload
   const state = store.getState()
-  const hasResource = state.resourceIndex && state.resourceIndex[type] && state.resourceIndex[type][id]
-  if (!hasResource) {
-    const url = params ? `${type}/${id}?${params}` : `${type}/${id}`
+  const resourceIndex = state.resourceIndex && state.resourceIndex[type] && state.resourceIndex[type][id] ?
+    state.resourceIndex[type][id] : undefined
+  const resource = resourceIndex !== undefined ? state.api[type].data[resourceIndex] : null
+  if (!resource) {
+    const url = include ? `${type}/${id}?include=${include}` : `${type}/${id}`
     store.dispatch(readEndpoint(url))
+  } else {
+    if (include) {
+      const includeList = resource.relationships[include].data
+      if (includeList) {
+        const missingResources = {}
+        includeList.forEach(item => {
+          const haveInclude = state.resourceIndex && state.resourceIndex[item.type] && state.resourceIndex[item.type][item.id]
+          if (!haveInclude) {
+            if (!missingResources.hasOwnProperty(item.type)) {
+              missingResources[item.type] = []
+            }
+            missingResources[item.type].push(item.id)
+          }
+        })
+        const missingTypes = Object.keys(missingResources)
+        missingTypes.forEach(missingType => {
+          let url = `${missingType}/?`
+          const ids = missingResources[missingType]
+          let and = ''
+          ids.forEach(id => {
+            url += `${and}filter[id]=${id}`
+            and = '&'
+          })
+          store.dispatch(readEndpoint(url))
+        })
+      }
+
+      const url = include ? `${type}/${id}?include=${include}` : `${type}/${id}`
+      store.dispatch(readEndpoint(url))
+    }
   }
 }
 
