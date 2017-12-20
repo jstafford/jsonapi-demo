@@ -5196,9 +5196,9 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-aria-menubutton@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/react-aria-menubutton/-/react-aria-menubutton-5.1.0.tgz#fa9bac43c02118d4eb60f9db6bbc5c20c34b658a"
+react-aria-menubutton@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/react-aria-menubutton/-/react-aria-menubutton-5.1.1.tgz#56b1f36ff43de48dfa1eab16e9f5efc1a63dc0a9"
   dependencies:
     focus-group "^0.3.1"
     prop-types "^15.6.0"
