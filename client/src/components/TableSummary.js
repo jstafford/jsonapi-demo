@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
+import {safeGet} from 'jsonapi-client-redux'
 import table from '../table'
 
 class TableRender extends Component<{
@@ -20,8 +21,7 @@ class TableRender extends Component<{
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const index = state.resourceIndex.tables ? state.resourceIndex.tables[ownProps.tableid] : undefined
-  const data = index !== undefined ? state.api.tables.data[index] : null
+  const data = safeGet(state, ['api', 'resources', 'tables', ownProps.tableid], null)
   return {
     data
   }

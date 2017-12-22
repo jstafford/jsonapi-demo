@@ -1,50 +1,42 @@
 import React, {Component} from 'react'
-import {Wrapper, Button, Menu, MenuItem} from 'react-aria-menubutton';
-import InfiniteScroll from 'react-infinite-scroller'
+import {Wrapper, Button, Menu, MenuItem} from 'react-aria-menubutton'
 import {connect} from 'react-redux'
-import {readEndpoint} from 'redux-json-api'
+import {readEndpoint, safeGet} from 'jsonapi-client-redux'
 import UserSummary from './UserSummary'
+import {setUsersSort} from '../appreducer'
 import user from '../user'
 
 import './AriaMenuButton.css'
 
 class UsersRender extends Component < {
+  sort: string,
   users: Array<user>,
-  getUsers: () => void,
+  changeSort: (sort) => void,
   sortUsers: (value, e) => void,
   loadMoreUsers: (sort, limit, offset) => void
 } > {
-  constructor(props) {
-    super(props)
-    this.state = {
-      sort: '',
-      limit: 50
-    }
-  }
-
   componentWillMount() {
-    const {getUsers} = this.props
-    getUsers()
+    const {loadMoreUsers, sort} = this.props
+    loadMoreUsers(sort, 50, 0)
   }
 
   handleSelection = (value, e) => {
-    const {sortUsers} = this.props
-      this.setState({sort: value})
-    sortUsers(value, e)
+    const {sortUsers, changeSort, sort} = this.props
+    if (value !== sort) {
+      changeSort(value)
+      sortUsers(value, e)
+    }
   }
 
   loadMore = (page) => {
-    const {loadMoreUsers, users} = this.props
-    const {sort, limit} = this.state
+    const {loadMoreUsers, sort, users} = this.props
     if (users) {
-      const offset = users.length
-      loadMoreUsers(sort, limit, offset)
+      loadMoreUsers(sort, 50, 50)
     }
   }
 
   render() {
-    const {users} = this.props
-    const {sort} = this.state;
+    const {sort, users} = this.props
     const menuItems = [
       {
         title: 'Default',
@@ -72,9 +64,7 @@ class UsersRender extends Component < {
     const curSortTitle = menuItems
       .filter(item => (item.value === sort))[0]
       .title
-    // style={{     bottom: '0px',     left: '0px',     margin: '0px',
-    // overflow: 'auto',     position: 'absolute',     right: '0px',
-    // top: '50px',   }}
+
     return (
       <div>
         <header>
@@ -107,11 +97,16 @@ class UsersRender extends Component < {
             </Menu>
           </Wrapper>
         </header>
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={this.loadMore}
-          hasMore={true}
-          loader={<div className = "loader" > Loading ...</div>}>
+        <div
+          style={{
+            bottom: '0px',
+            left: '0px',
+            margin: '0px',
+            overflow: 'auto',
+            position: 'absolute',
+            right: '0px',
+            top: '50px',
+          }}>
           <ul >
             {
               users && users.map(
@@ -119,22 +114,28 @@ class UsersRender extends Component < {
               )
             }
           </ul>
-        </InfiniteScroll>
+        </div>
       </div>
     );
   }
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const users = state.api.users
-    ? state.api.users.data
+  const sort = state.app.sort
+  const sortKey = `sort=${sort}`
+  const sortIds = safeGet(state, ['api', 'sorts', 'users', sortKey], null)
+  const users = sortIds
+    ? sortIds.map(id => (safeGet(state, ['api', 'resources', 'users', id], null)))
     : null
-  return {users}
+  return {
+    sort,
+    users
+  }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  getUsers: () => {
-    dispatch(readEndpoint('users?include=tables'))
+  changeSort: (sort) => {
+    dispatch(setUsersSort(sort))
   },
   loadMoreUsers: (sort, limit, offset) => {
     dispatch(

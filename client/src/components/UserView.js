@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
-import {ensureResource} from '../resourceIndexMiddleware'
+import {ensureResource, safeGet} from 'jsonapi-client-redux'
 import user from '../user'
 import TableSummary from './TableSummary'
 
@@ -46,8 +46,7 @@ class UserViewRender extends Component<{
 
 const mapState = (state: GenericMap, ownProps: Object): Object => {
   const userid = ownProps.match.params.userid
-  const index = state.resourceIndex.users ? state.resourceIndex.users[userid] : undefined
-  const data = index !== undefined ? state.api.users.data[index] : null
+  const data = safeGet(state, ['api', 'resources', 'users', userid], null)
   return {
     data,
     userid,
@@ -57,7 +56,7 @@ const mapState = (state: GenericMap, ownProps: Object): Object => {
 const mapDisp = (dispatch: Dispatch<Action>, ownProps: Object): Object => (
   {
     ensureUser: (id:string): void => {
-      dispatch(ensureResource({type:'users', id, include:'tables'}))
+      dispatch(ensureResource('users', id, 'tables'))
     }
   }
 )

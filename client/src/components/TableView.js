@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
-import {readEndpoint, updateResource} from 'redux-json-api'
+import {readEndpoint, safeGet, updateResource} from 'jsonapi-client-redux'
 import table from '../table'
 import user from '../user'
 import {generatePatch} from '../resourceIndexMiddleware'
@@ -79,11 +79,9 @@ class TableViewRender extends Component<{
 
 const mapState = (state: GenericMap, ownProps: Object): Object => {
   const tableid = ownProps.match.params.tableid
-  const index = tableid && state.resourceIndex.tables ? state.resourceIndex.tables[tableid] : undefined
-  const data = index !== undefined ? state.api.tables.data[index] : null
+  const data = safeGet(state, ['api', 'resources', 'tables', tableid], null)
   const ownerId = data ? data.relationships.owner.data.id : undefined
-  const ownerIndex = ownerId && state.resourceIndex.users ? state.resourceIndex.users[ownerId] : undefined
-  const owner = ownerIndex !== undefined ? state.api.users.data[ownerIndex] : null
+  const owner = safeGet(state, ['api', 'resources', 'users', ownerId], null)
   return {
     tableid,
     data,

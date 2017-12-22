@@ -1,3 +1,4 @@
+import {ensureResource, safeGet} from 'jsonapi-client-redux'
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
@@ -26,13 +27,19 @@ class UserSummaryRender extends Component<{
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const index = state.resourceIndex.users ? state.resourceIndex.users[ownProps.userid] : undefined
-  const data = index !== undefined ? state.api.users.data[index] : null
+  const data = safeGet(state, ['api', 'resources', 'users', ownProps.userid], null)
   return {
     data
   }
 }
 
-const UserSummary = connect(mapStateToProps, null)(UserSummaryRender)
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  ensureUser: (id) => {
+    dispatch(ensureResource('users', id))
+  },
+})
+
+
+const UserSummary = connect(mapStateToProps, mapDispatchToProps)(UserSummaryRender)
 
 export default UserSummary
