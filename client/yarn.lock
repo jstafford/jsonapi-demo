@@ -3805,7 +3805,7 @@ json5@^0.5.0, json5@^0.5.1:
 
 "jsonapi-client-redux@https://github.com/jstafford/redux-json-api":
   version "1.0"
-  resolved "https://github.com/jstafford/redux-json-api#ce14f8635c0ff28be94cf32f1ffcf466b0b1a860"
+  resolved "https://github.com/jstafford/redux-json-api#d4b951b6e4352c24f5c9a20959fc851f821f6a34"
   dependencies:
     axios "^0.17.1"
     fast-deep-equal "^1.0.0"

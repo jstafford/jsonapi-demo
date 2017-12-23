@@ -4,13 +4,13 @@ import {connect} from 'react-redux'
 import {readEndpoint, safeGet} from 'jsonapi-client-redux'
 import UserSummary from './UserSummary'
 import {setUsersSort} from '../appreducer'
-import user from '../user'
+// import user from '../user'
 
 import './AriaMenuButton.css'
 
 class UsersRender extends Component < {
   sort: string,
-  users: Array<user>,
+  sortIds: Array<string>,
   changeSort: (sort) => void,
   sortUsers: (value, e) => void,
   loadMoreUsers: (sort, limit, offset) => void
@@ -36,7 +36,7 @@ class UsersRender extends Component < {
   }
 
   render() {
-    const {sort, users} = this.props
+    const {sort, sortIds} = this.props
     const menuItems = [
       {
         title: 'Default',
@@ -109,8 +109,14 @@ class UsersRender extends Component < {
           }}>
           <ul >
             {
-              users && users.map(
-                user => (<UserSummary key={user.id} userid={user.id}/>)
+              sortIds && sortIds.map(
+                (id, index) => {
+                  if (id) {
+                    return (<UserSummary key={id} userid={id}/>)
+                  } else {
+                    return (<div key={index} style={{height: 36}}></div>)
+                  }
+                }
               )
             }
           </ul>
@@ -124,12 +130,9 @@ const mapStateToProps = (state, ownProps) => {
   const sort = state.app.sort
   const sortKey = `sort=${sort}`
   const sortIds = safeGet(state, ['api', 'sorts', 'users', sortKey], null)
-  const users = sortIds
-    ? sortIds.map(id => (safeGet(state, ['api', 'resources', 'users', id], null)))
-    : null
   return {
     sort,
-    users
+    sortIds
   }
 }
 
