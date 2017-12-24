@@ -112,23 +112,45 @@ PostgresHandler.prototype.search = async function(request, callback) {
   }
   let query = `SELECT data, count(*) OVER() AS full_count FROM ${request.params.type}`
   let values = []
-  if (request.params.filter && request.params.filter.id) {
-    const filter = request.params.filter
-    query += ' WHERE id '
-    if (Array.isArray(filter.id)) {
-      let comma = ''
-      query += ' IN ('
-      filter.id.forEach(id => {
-        values.push(id)
-        query += `${comma}\$${values.length}`
-        comma = ', '
-      })
-      query += ')'
-    } else {
-      values.push(filter.id)
-      query += ` = \$${values.length}`
-    }
+  if (request.params.filter) {
+    query += ' WHERE'
+    const filters = Object.keys(request.params.filter)
+    filters.forEach(key => {
+      let and = ''
+      const filterParam = request.params.filter[key]
+
+      query += `${and}`
+      and = ' AND'
+      // Id filtering handled special, since id is primary key
+      if (key === 'id') {
+        query += ` id`
+        if (Array.isArray(filterParam)) {
+          let comma = ''
+          query += ' IN ('
+          filterParam.forEach(id => {
+            values.push(id)
+            query += `${comma}\$${values.length}`
+            comma = ', '
+          })
+          query += ')'
+        } else {
+          values.push(filterParam)
+          query += ` = \$${values.length}`
+        }
+      } else {
+        query += ` data @>`
+        if (typeof(filterParam) === 'object') {
+          values.push(`{"${key}":${JSON.stringify(filterParam)}}`)
+          query += ` \$${values.length}`
+        } else {
+          values.push(`{"${key}":"${filterParam}"}`)
+          query += ` \$${values.length}`
+        }
+      }
+
+    })
   }
+
   if (request.params.sort) {
     const dir = request.params.sort.charAt(0) === '-' ? 'DESC' : 'ASC'
     const sortField = request.params.sort.replace('-', '')
