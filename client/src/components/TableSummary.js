@@ -12,7 +12,13 @@ class TableRender extends Component<{
     const {data} = this.props
     if (data) {
       return (
-        <li><Link to={`/table/${data.id}`}>{data.attributes.title}</Link></li>
+        <li>
+          <Link to={`/table/${data.id}`}>{data.attributes.title}</Link>
+          <span style={{
+            fontSize: 'small',
+          }}> Columns: {data.attributes.fields.length} Rows: {data.attributes.rows.length}
+          </span>
+      </li>
       )
     } else {
       return null

@@ -60,6 +60,12 @@ class UsersRender extends Component < {
       }, {
         title: 'Fewest tables',
         value: 'tablesCount'
+      }, {
+        title: 'User name A to Z',
+        value: 'name'
+      }, {
+        title: 'User name Z to A',
+        value: '-name'
       }
     ]
     const curSortTitle = menuItems
@@ -98,29 +104,30 @@ class UsersRender extends Component < {
             </Menu>
           </Wrapper>
         </header>
-        {
-          // <div
-          // style={{
-          //   bottom: '0px',
-          //   left: '0px',
-          //   margin: '0px',
-          //   overflow: 'auto',
-          //   position: 'absolute',
-          //   right: '0px',
-          //   top: '50px',
-          // }}>
-        }
-        <InfiniteScroll
-          pageStart={0}
-          loadMore={this.loadMore}
-          hasMore={sortIds ? sortIds.length < total : true}
-          loader={<div className = "loader" > Loading ...</div>}>
-          <ul >
-            {sortIds && sortIds.map(id => (
-              <UserSummary key={id} userid={id}/>
-            ))}
-          </ul>
-        </InfiniteScroll>
+        <div
+        style={{
+          bottom: '0px',
+          left: '0px',
+          margin: '0px',
+          overflow: 'auto',
+          position: 'absolute',
+          right: '0px',
+          top: '50px',
+        }}>
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={this.loadMore}
+            hasMore={sortIds ? sortIds.length < total : true}
+            loader={<div className = "loader" > Loading ...</div>}
+            useWindow={false}
+          >
+            <ul >
+              {sortIds && sortIds.map(id => (
+                <UserSummary key={id} userid={id}/>
+              ))}
+            </ul>
+          </InfiniteScroll>
+        </div>
       </div>
     );
   }
