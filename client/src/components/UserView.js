@@ -1,11 +1,11 @@
 import React, {Component} from 'react'
-import {Wrapper, Button, Menu, MenuItem} from 'react-aria-menubutton'
 import InfiniteScroll from 'react-infinite-scroller'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {ensureResource, safeGet, readEndpoint} from 'jsonapi-client-redux'
 import user from '../user'
 import {setUserTablesSort} from '../appreducer'
+import MenuButton from './MenuButton'
 import Progress from './Progress'
 import TableSummary from './TableSummary'
 
@@ -74,28 +74,7 @@ class UserViewRender extends Component<{
                 fontSize: 'large',
                 fontWeight: 'bold'
               }}>Tables</span>
-            <Wrapper className="AriaMenuButton" onSelection={this.handleSelection}>
-              <Button className="AriaMenuButton-trigger">
-                Sort: {curSortTitle}
-              </Button>
-              <Menu>
-                <ul className="AriaMenuButton-menu">
-                  {
-                    menuItems.map((item, i) => {
-                      let itemClass = 'AriaMenuButton-menuItem';
-                      if (tablesSort === item.value) {
-                        itemClass += ' is-selected';
-                      }
-                      return (
-                        <li className='AriaMenuButton-menuItemWrapper' key={i}>
-                          <MenuItem className={itemClass} value={item.value}>{item.title}</MenuItem>
-                        </li>
-                      )
-                    })
-                  }
-                </ul>
-              </Menu>
-            </Wrapper>
+            <MenuButton menuItems={menuItems} onSelection={this.handleSelection} selectedValue={tablesSort} title={`Sort: ${curSortTitle}`}/>
           </header>
           <div style={{
             bottom: '0px',

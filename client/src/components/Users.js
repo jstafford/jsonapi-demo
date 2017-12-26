@@ -1,13 +1,11 @@
 import React, {Component} from 'react'
-import {Wrapper, Button, Menu, MenuItem} from 'react-aria-menubutton'
 import InfiniteScroll from 'react-infinite-scroller'
 import {connect} from 'react-redux'
 import {readEndpoint, safeGet} from 'jsonapi-client-redux'
 import {setUsersSort} from '../appreducer'
+import MenuButton from './MenuButton'
 import Progress from './Progress'
 import UserSummary from './UserSummary'
-
-import './AriaMenuButton.css'
 
 class UsersRender extends Component < {
   sort: string,
@@ -82,28 +80,7 @@ class UsersRender extends Component < {
               fontWeight: 'bold'
             }}>Users
           </span>
-          <Wrapper className="AriaMenuButton" onSelection={this.handleSelection}>
-            <Button className="AriaMenuButton-trigger">
-              Sort: {curSortTitle}
-            </Button>
-            <Menu>
-              <ul className="AriaMenuButton-menu">
-                {
-                  menuItems.map((item, i) => {
-                    let itemClass = 'AriaMenuButton-menuItem';
-                    if (sort === item.value) {
-                      itemClass += ' is-selected';
-                    }
-                    return (
-                      <li className='AriaMenuButton-menuItemWrapper' key={i}>
-                        <MenuItem className={itemClass} value={item.value}>{item.title}</MenuItem>
-                      </li>
-                    )
-                  })
-                }
-              </ul>
-            </Menu>
-          </Wrapper>
+          <MenuButton menuItems={menuItems} onSelection={this.handleSelection} selectedValue={sort} title={`Sort: ${curSortTitle}`}/>
         </header>
         <div
         style={{
