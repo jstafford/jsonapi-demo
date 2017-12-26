@@ -3,8 +3,9 @@ import {Wrapper, Button, Menu, MenuItem} from 'react-aria-menubutton'
 import InfiniteScroll from 'react-infinite-scroller'
 import {connect} from 'react-redux'
 import {readEndpoint, safeGet} from 'jsonapi-client-redux'
-import UserSummary from './UserSummary'
 import {setUsersSort} from '../appreducer'
+import Progress from './Progress'
+import UserSummary from './UserSummary'
 
 import './AriaMenuButton.css'
 
@@ -118,7 +119,7 @@ class UsersRender extends Component < {
             pageStart={0}
             loadMore={this.loadMore}
             hasMore={sortIds ? sortIds.length < total : true}
-            loader={<div className = "loader" > Loading ...</div>}
+            loader={<Progress/>}
             useWindow={false}
           >
             <ul >

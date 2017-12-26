@@ -6,6 +6,7 @@ import {Link} from 'react-router-dom'
 import {ensureResource, safeGet, readEndpoint} from 'jsonapi-client-redux'
 import user from '../user'
 import {setUserTablesSort} from '../appreducer'
+import Progress from './Progress'
 import TableSummary from './TableSummary'
 
 class UserViewRender extends Component<{
@@ -109,7 +110,7 @@ class UserViewRender extends Component<{
               pageStart={0}
               loadMore={this.loadMore}
               hasMore={tablesIds ? tablesIds.length < tablesTotal : true}
-              loader={<div className = "loader" > Loading ...</div>}
+              loader={<Progress/>}
               useWindow={false}
             >
               <ul>
@@ -125,7 +126,7 @@ class UserViewRender extends Component<{
       return (
         <div>
           <Link to={'/'}>All Users</Link>
-          <h1>Loading...</h1>
+          <Progress/>
         </div>
       )
     }

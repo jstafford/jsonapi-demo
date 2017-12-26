@@ -1,0 +1,4 @@
+@keyframes colorShift {
+  from {color: black;}
+  to {color: white;}
+}
