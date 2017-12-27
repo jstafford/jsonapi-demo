@@ -19,12 +19,12 @@ class Row extends Component<{
         ...cellStyle,
         backgroundColor: 'gainsboro',
         position: 'sticky',
-        left: '0px',
+        left: '1px',
       }, {
         ...cellStyle,
         backgroundColor: 'gainsboro',
         position: 'sticky',
-        left: '172px',
+        left: '173px',
       }
     ]
     const numStickyCells = stickyCellStyles.length

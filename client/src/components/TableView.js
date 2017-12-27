@@ -8,6 +8,7 @@ import {generatePatch} from '../generatePatch'
 import Cell from './Cell'
 import HeaderRow from './HeaderRow'
 import Row from './Row'
+import TableFooter from './TableFooter'
 
 class TableViewRender extends Component<{
   data: table,
@@ -33,15 +34,38 @@ class TableViewRender extends Component<{
     resourceChanged(data, path, newValue)
   }
 
+  tableDomNode = null
+  footerDomNode = null
+
+  isSyncingTableScroll = false
+  onTableScroll = (e) => {
+    if (!this.isSyncingTableScroll) {
+      this.isSyncingTableScroll = true
+      this.footerDomNode.scrollLeft = e.target.scrollLeft
+    }
+    this.isSyncingTableScroll = false
+  }
+
+  isSyncingFooterScroll = false
+  onFooterScroll = (e) => {
+    if (!this.isSyncingFooterScroll) {
+      this.isSyncingFooterScroll = true
+      this.tableDomNode.scrollLeft = e.target.scrollLeft
+    }
+    this.isSyncingFooterScroll = false
+  }
+
   render() {
     const {data, owner} = this.props
 
     if (data) {
       const fields = data.attributes.fields
       const rows = data.attributes.rows
+      const stats = data.attributes.stats
       const width = `${fields.length * 150}px`
       return (
         <div style={{
+            fontSize: 'small',
             overflow: 'hidden'
           }}>
           <header>
@@ -55,17 +79,20 @@ class TableViewRender extends Component<{
             <br/>
             <Cell value={data.attributes.description} valueChanged={newValue=>this.attributeChanged(newValue, 'description')}/>
           </header>
-          <div style={{
-            bottom: '100px',
-            fontSize: 'small',
-            overflowX: 'scroll',
-            overflowY: 'scroll',
-            position: 'absolute',
-            textAlign: 'left',
-            top: '75px',
-            verticalAlign: 'middle',
-            width: '100%',
-          }}>
+          <div
+            ref={ (domNode) => { this.tableDomNode = domNode } }
+            onScroll={this.onTableScroll}
+            style={{
+              bottom: '100px',
+              overflowX: 'scroll',
+              overflowY: 'scroll',
+              position: 'absolute',
+              textAlign: 'left',
+              top: '75px',
+              verticalAlign: 'middle',
+              width: '100%',
+            }}
+          >
             <div style={{
                 border: '1px solid darkgray',
                 display: 'table',
@@ -90,6 +117,19 @@ class TableViewRender extends Component<{
                 {rows && rows.map((row, index) => (<Row key={index} rowNum={index} row={row} valueAtPathChanged={this.valueAtPathChanged}/>))}
               </div>
             </div>
+          </div>
+          <div
+            ref={ (domNode) => { this.footerDomNode = domNode } }
+            onScroll={this.onFooterScroll}
+            style={{
+              bottom:'0px',
+              height: '100px',
+              overflowX: 'scroll',
+              overflowY: 'scroll',
+              position: 'absolute',
+              width:'100%',
+            }}>
+              <TableFooter stats={stats}/>
           </div>
         </div>
       )
