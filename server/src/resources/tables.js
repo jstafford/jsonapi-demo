@@ -20,7 +20,7 @@ jsonapiServer.define({
         name: jsonapiServer.Joi.string(),
         title: jsonapiServer.Joi.string(),
         description: jsonapiServer.Joi.string(),
-        type: jsonapiServer.Joi.string().allow('string', 'number', 'integer', 'boolean', 'date', 'time', 'datetime', 'year', 'yearmonth', 'geopoint')
+        type: jsonapiServer.Joi.string().valid('string', 'number', 'integer', 'boolean', 'date', 'time', 'datetime', 'year', 'yearmonth', 'geopoint')
       }).allow(null))
       .description('Definition for the fields of the table')
       .example('[{"title":"City"},{"title":"Nation"},{"title":"Population"}]'),
@@ -32,6 +32,14 @@ jsonapiServer.define({
       ).sparse(true)).sparse(true)
       .description('The rows of the table')
       .example('[["Chongqing","China",30165500],["Shanghai","China",24256800],["Delhi","India",21678794]]'),
+    stats: jsonapiServer.Joi.array().items(jsonapiServer.Joi.array().items(
+        jsonapiServer.Joi.object().keys({
+          name: jsonapiServer.Joi.string().allow('min', 'mean', 'median', 'max', 'total', 'true', 'false', 'center', 'northmost', 'southmost', null),
+          value: jsonapiServer.Joi.any().allow(null),
+        }).allow(null)
+      ).sparse(true)).sparse(true)
+      .description('Array of statistics for the each row, arranged by column')
+      .example('[[{"name":"min","value":0},{"name":"mean","value":50},{"name":"max","value":100}],[{"name":"true","value":45},{"name":"false","value":55}],[{"name":"center","value":"-98.5795, 39.8283"},{"name":"northmost","value":"-156.47741, 71.39040"},{"name":"southmost","value":"-155.67927, 18.91023"}]]'),
     owner: jsonapiServer.Joi.one('users')
       .description('The user who controls this table'),
     meta: jsonapiServer.Joi.object().keys({

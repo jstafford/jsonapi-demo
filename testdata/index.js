@@ -1,6 +1,7 @@
 const mocker = require('mocker-data-generator').default
 const pg = require('pg')
 
+// using datatypes and format adapted from https://frictionlessdata.io/specs/table-schema/
 const validTypes = [
   'string',
   'number',
@@ -237,6 +238,149 @@ const addStars = async (data) => {
   return data
 }
 
+const totalReducer = (accumulator, currentValue) => accumulator + currentValue;
+
+const genNumberStats = (table, index) => {
+  const values = []
+  values.length = table.rows.length
+  table.rows.forEach((row, i) => {
+    values[i] = row[index]
+  })
+  const total = values.reduce(totalReducer, 0)
+  const statblock = []
+  statblock.push({
+    name: 'min',
+    value: Math.min(...values)
+  })
+  statblock.push({
+    name: 'mean',
+    value: total/values.length
+  })
+  statblock.push({
+    name: 'max',
+    value: Math.max(...values)
+  })
+  statblock.push({
+    name: 'total',
+    value: total
+  })
+  return statblock
+}
+
+const genBooleanStats = (table, index) => {
+  let numTrue = 0
+  let numFalse = 0
+  table.rows.forEach(row => {
+    if (row[index]) {
+      numTrue += 1
+    } else {
+      numFalse += 1
+    }
+  })
+  const statblock = []
+  statblock.push({
+    name: 'true',
+    value: numTrue
+  })
+  statblock.push({
+    name: 'false',
+    value: numFalse
+  })
+  return statblock
+}
+
+const genDateStats = (table, index) => {
+  const values = []
+  values.length = table.rows.length
+  table.rows.forEach((row, i) => {
+    values[i] = row[index]
+  })
+  values.sort()
+  const statblock = []
+  statblock.push({
+    name: 'min',
+    value: values[0]
+  })
+  statblock.push({
+    name: 'median',
+    value: values[Math.round(values.length/2)]
+  })
+  statblock.push({
+    name: 'max',
+    value: values[values.length - 1]
+  })
+  return statblock
+}
+
+const genGeoStats = (table, index) => {
+  const numRows = table.rows.length
+  const longitudes = []
+  const latitudes = []
+  longitudes.length = numRows
+  latitudes.length = numRows
+  table.rows.forEach((row, i) => {
+    const geopoint = row[index].split(', ')
+    longitudes[i] = 1 * geopoint[0]
+    latitudes[i] = 1 * geopoint[1]
+  })
+  const avgLongitude = longitudes.reduce(totalReducer, 0) / numRows
+  const avgLatitudes = latitudes.reduce(totalReducer, 0) / numRows
+  const maxLatitude = Math.max(...latitudes)
+  const maxLatitudeIndex = latitudes.indexOf(maxLatitude)
+  const minLatitude = Math.min(...latitudes)
+  const minLatitudeIndex = latitudes.indexOf(minLatitude)
+
+  const statblock = []
+  statblock.push({
+    name: 'center',
+    value: `${Number(avgLongitude).toFixed(4)}, ${Number(avgLatitudes).toFixed(4)}`
+  })
+  statblock.push({
+    name: 'northmost',
+    value: `${longitudes[maxLatitudeIndex]}, ${latitudes[maxLatitudeIndex]}`
+  })
+  statblock.push({
+    name: 'southmost',
+    value: `${longitudes[minLatitudeIndex]}, ${latitudes[minLatitudeIndex]}`
+  })
+  return statblock
+}
+
+
+
+const addTableStats = async (data) => {
+  data.tables.forEach((table, index) => {
+    table.stats = []
+    table.fields.forEach((field, index) => {
+      let statblock
+      switch (field.type) {
+        case 'string':
+          statblock = []
+          break
+        case 'number':
+        case 'integer':
+          statblock = genNumberStats(table, index)
+          break
+        case 'boolean':
+          statblock = genBooleanStats(table, index)
+          break
+        case 'date':
+        case 'time':
+        case 'datetime':
+        case 'year':
+        case 'yearmonth':
+          statblock = genDateStats(table, index)
+          break
+        case 'geopoint':
+          statblock = genGeoStats(table, index)
+          break
+      }
+      table.stats.push(statblock)
+    })
+  })
+  return data
+}
+
 const addMeta = async (data) => {
   data.usersmeta = []
   data.usersmeta.length = data.users.length
@@ -339,6 +483,7 @@ mocker()
   .then(addUserWithLotsOfTables, err => console.error(err))
   .then(addFollowers,  err => console.error(err))
   .then(addStars,  err => console.error(err))
+  .then(addTableStats, err => console.error(err))
   .then(addMeta, err => console.error(err))
   .then(writeData, err => console.error(err))
   .then(console.log('done'), err => console.error(err))
