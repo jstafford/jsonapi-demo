@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import Cell from './Cell'
 
-class HeaderRow extends Component<{
+class TableHeader extends Component<{
   fields: Array<Object>,
   valueAtPathChanged: (path: string, newValue: string) => void,
 }> {
@@ -71,4 +71,4 @@ class HeaderRow extends Component<{
   }
 }
 
-export default HeaderRow
+export default TableHeader

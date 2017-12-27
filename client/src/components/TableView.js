@@ -6,7 +6,7 @@ import table from '../table'
 import user from '../user'
 import {generatePatch} from '../generatePatch'
 import Cell from './Cell'
-import HeaderRow from './HeaderRow'
+import TableHeader from './TableHeader'
 import TableBody from './TableBody'
 import TableFooter from './TableFooter'
 
@@ -91,7 +91,7 @@ class TableViewRender extends Component<{
                 width: '100%',
               }}
             >
-              <HeaderRow fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>
+              <TableHeader fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>
               <TableBody rows={rows} valueAtPathChanged={this.valueAtPathChanged}/>
             </main>
             <footer
