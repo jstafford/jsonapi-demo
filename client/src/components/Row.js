@@ -9,16 +9,20 @@ class Row extends Component<{
   render() {
     const {row, rowNum, valueAtPathChanged} = this.props
     return (
-      <tr>
+      <div style={{
+        display: 'table-row',
+      }}>
         {row.map((value, index) => (
-          <td key={index} style={{
-            border:'1px solid black',
-            padding:'0.2em 0.4em'
+          <div key={index} style={{
+            border: '1px solid darkgray',
+            display: 'table-cell',
+            padding: '3px 10px',
+            width: '150px',
           }}>
             <Cell value={value} valueChanged={(newValue) => valueAtPathChanged(`/attributes/rows/${rowNum}/${index}`, newValue)}/>
-          </td>))
+          </div>))
         }
-      </tr>
+      </div>
     )
   }
 }

@@ -35,40 +35,62 @@ class TableViewRender extends Component<{
 
   render() {
     const {data, owner} = this.props
+
     if (data) {
       const fields = data.attributes.fields
       const rows = data.attributes.rows
+      const width = `${fields.length * 150}px`
       return (
-        <div>
-          <Link to={`/user/${owner.id}`}>{owner.attributes.name}</Link>
-          <table
-            style={{
-              borderCollapse: 'collapse',
-              margin:'auto',
-            }}>
-            <caption
+        <div style={{
+            overflow: 'hidden'
+          }}>
+          <header>
+            <Link to={`/user/${owner.id}`}>{owner.attributes.name}</Link>
+            <br/>
+            <Cell value={data.attributes.title} valueChanged={newValue=>this.attributeChanged(newValue, 'title')}
               style={{
                 fontSize: 'x-large',
                 fontWeight: 'bold',
-                padding: '0.2em 0.4em',
+              }}/>
+            <br/>
+            <Cell value={data.attributes.description} valueChanged={newValue=>this.attributeChanged(newValue, 'description')}/>
+          </header>
+          <div style={{
+            bottom: '100px',
+            fontSize: 'small',
+            overflowX: 'scroll',
+            overflowY: 'scroll',
+            position: 'absolute',
+            textAlign: 'left',
+            top: '75px',
+            verticalAlign: 'middle',
+            width: '100%',
+          }}>
+            <div style={{
+                border: '1px solid darkgray',
+                display: 'table',
+                position: 'sticky',
+                tableLayout: 'fixed',
+                top: '0px',
+                width: '100%',
+                zIndex: 100,
               }}>
-              <Cell value={data.attributes.title} valueChanged={newValue=>this.attributeChanged(newValue, 'title')}/>
-            </caption>
-            <caption
-              style={{
-                padding: '0.2em 0.4em',
+              <HeaderRow fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>
+            </div>
+            <div style={{
+                border: '1px solid darkgray',
+                display: 'table',
+                tableLayout: 'fixed',
+                width: '100%',
               }}>
-              <Cell value={data.attributes.description} valueChanged={newValue=>this.attributeChanged(newValue, 'description')}/>
-            </caption>
-            {fields && <HeaderRow fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>}
-            <tbody
-              style={{
-                textAlign: 'left',
-                verticalAlign: 'middle',
+              <div style={{
+                display: 'table-row-group',
+                width: width,
               }}>
-              {rows && rows.map((row, index) => (<Row key={index} rowNum={index} row={row} valueAtPathChanged={this.valueAtPathChanged}/>))}
-            </tbody>
-          </table>
+                {rows && rows.map((row, index) => (<Row key={index} rowNum={index} row={row} valueAtPathChanged={this.valueAtPathChanged}/>))}
+              </div>
+            </div>
+          </div>
         </div>
       )
     } else {

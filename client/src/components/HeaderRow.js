@@ -7,35 +7,50 @@ class HeaderRow extends Component<{
 }> {
   render() {
     const {fields, valueAtPathChanged} = this.props
-    return (
-      <thead style={{
-        textAlign: 'left',
-        verticalAlign: 'middle',
-      }}>
-        <tr style={{backgroundColor: 'gainsboro'}}>
-          {fields.map((field, index) => (
-            <th key={index} style={{
-                border:'1px solid black',
-                padding:'0.2em 0.4em'
-              }}
-              data-rh={field.description}>
-              <Cell value={field.title} valueChanged={(newValue) => valueAtPathChanged(`/attributes/fields/${index}/title`, newValue)}/>
-            </th>))
-          }
-        </tr>
-        <tr style={{backgroundColor: 'gainsboro'}}>
-          {fields.map((field, index) => (
-            <th key={index} style={{
-                border:'1px solid black',
-                padding:'0.2em 0.4em'
-              }}
-              data-rh={field.description}>
-              {field.type}
-            </th>))
-          }
-        </tr>
-      </thead>
-    )
+    const cellStyle = {
+      backgroundColor: 'gainsboro',
+      border: '1px solid darkgray',
+      display: 'table-cell',
+      padding: '3px 10px',
+      width: '150px',
+    }
+    const firstCellStyle = {
+      ...cellStyle,
+      // position: 'sticky',
+      // left: '0px',
+    }
+    if (fields) {
+      return (
+        <div style={{
+          backgroundColor: 'gainsboro',
+          display: 'table-header-group',
+          fontWeight: 'bold',
+        }}>
+          <div style={{
+            display: 'table-row',
+          }}>
+            {fields.map((field, index) => (
+              <div key={index} style={index===0?firstCellStyle:cellStyle}
+                data-rh={field.description}>
+                <Cell value={field.title} valueChanged={(newValue) => valueAtPathChanged(`/attributes/fields/${index}/title`, newValue)}/>
+              </div>))
+            }
+          </div>
+           <div style={{
+            display: 'table-row',
+          }}>
+            {fields.map((field, index) => (
+              <div key={index} style={index===0?firstCellStyle:cellStyle}
+                data-rh={field.description}>
+                {field.type}
+              </div>))
+            }
+          </div>
+        </div>
+      )
+    } else {
+      return null
+    }
   }
 }
 

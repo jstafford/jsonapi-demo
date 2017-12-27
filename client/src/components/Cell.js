@@ -18,7 +18,7 @@ class Cell extends Component<{
   }
 
   render() {
-    const {value, valueChanged} = this.props
+    const {style, value, valueChanged, ...props} = this.props
     const valueIsNumeric = isNumber(value)
     const displayValue = valueIsNumeric ? this.numberFormater.format(value) : value
     const onBlur = (e) => {
@@ -28,18 +28,24 @@ class Cell extends Component<{
         valueChanged(newValue)
       }
     }
+    const defaultStyle = {
+      backgroundColor: 'inherit',
+      fontSize: 'inherit',
+      fontWeight: 'inherit',
+      border: 'none',
+      width: '100%'
+    }
+    if (style) {
+      Object.assign(defaultStyle, style)
+    }
+
     return (
       <input
         type='text'
         defaultValue={displayValue}
-        style={{
-          backgroundColor: 'inherit',
-          fontSize: 'inherit',
-          fontWeight: 'inherit',
-          border: 'none',
-          width: '100%'
-        }}
+        style={defaultStyle}
         onBlur={onBlur}
+        {...props}
       />
     )
   }
