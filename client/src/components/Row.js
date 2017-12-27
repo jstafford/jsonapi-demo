@@ -8,17 +8,32 @@ class Row extends Component<{
 }> {
   render() {
     const {row, rowNum, valueAtPathChanged} = this.props
+    const cellStyle = {
+      border: '1px solid darkgray',
+      display: 'table-cell',
+      padding: '3px 10px',
+      width: '150px',
+    }
+    const stickyCellStyles = [
+      {
+        ...cellStyle,
+        backgroundColor: 'gainsboro',
+        position: 'sticky',
+        left: '0px',
+      }, {
+        ...cellStyle,
+        backgroundColor: 'gainsboro',
+        position: 'sticky',
+        left: '172px',
+      }
+    ]
+    const numStickyCells = stickyCellStyles.length
     return (
       <div style={{
         display: 'table-row',
       }}>
         {row.map((value, index) => (
-          <div key={index} style={{
-            border: '1px solid darkgray',
-            display: 'table-cell',
-            padding: '3px 10px',
-            width: '150px',
-          }}>
+          <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}>
             <Cell value={value} valueChanged={(newValue) => valueAtPathChanged(`/attributes/rows/${rowNum}/${index}`, newValue)}/>
           </div>))
         }

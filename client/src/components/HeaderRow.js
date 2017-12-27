@@ -7,19 +7,26 @@ class HeaderRow extends Component<{
 }> {
   render() {
     const {fields, valueAtPathChanged} = this.props
-    const cellStyle = {
-      backgroundColor: 'gainsboro',
-      border: '1px solid darkgray',
-      display: 'table-cell',
-      padding: '3px 10px',
-      width: '150px',
-    }
-    const firstCellStyle = {
-      ...cellStyle,
-      // position: 'sticky',
-      // left: '0px',
-    }
     if (fields) {
+      const cellStyle = {
+        backgroundColor: 'gainsboro',
+        border: '1px solid darkgray',
+        display: 'table-cell',
+        padding: '3px 10px',
+        width: '150px',
+      }
+      const stickyCellStyles = [
+        {
+          ...cellStyle,
+          position: 'sticky',
+          left: '0px',
+        }, {
+          ...cellStyle,
+          position: 'sticky',
+          left: '172px',
+        }
+      ]
+      const numStickyCells = stickyCellStyles.length
       return (
         <div style={{
           backgroundColor: 'gainsboro',
@@ -30,7 +37,7 @@ class HeaderRow extends Component<{
             display: 'table-row',
           }}>
             {fields.map((field, index) => (
-              <div key={index} style={index===0?firstCellStyle:cellStyle}
+              <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}
                 data-rh={field.description}>
                 <Cell value={field.title} valueChanged={(newValue) => valueAtPathChanged(`/attributes/fields/${index}/title`, newValue)}/>
               </div>))
@@ -40,7 +47,7 @@ class HeaderRow extends Component<{
             display: 'table-row',
           }}>
             {fields.map((field, index) => (
-              <div key={index} style={index===0?firstCellStyle:cellStyle}
+              <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}
                 data-rh={field.description}>
                 {field.type}
               </div>))
