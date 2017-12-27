@@ -7,7 +7,7 @@ import user from '../user'
 import {generatePatch} from '../generatePatch'
 import Cell from './Cell'
 import HeaderRow from './HeaderRow'
-import Row from './Row'
+import TableBody from './TableBody'
 import TableFooter from './TableFooter'
 
 class TableViewRender extends Component<{
@@ -34,23 +34,23 @@ class TableViewRender extends Component<{
     resourceChanged(data, path, newValue)
   }
 
-  tableDomNode = null
-  footerDomNode = null
+  mainDomEl = null
+  footerDomEl = null
 
-  isSyncingTableScroll = false
-  onTableScroll = (e) => {
-    if (!this.isSyncingTableScroll) {
-      this.isSyncingTableScroll = true
-      this.footerDomNode.scrollLeft = e.target.scrollLeft
+  isSyncingMainScroll = false
+  onMainScroll = (e) => {
+    if (!this.isSyncingMainScroll) {
+      this.isSyncingMainScroll = true
+      this.footerDomEl.scrollLeft = e.target.scrollLeft
     }
-    this.isSyncingTableScroll = false
+    this.isSyncingMainScroll = false
   }
 
   isSyncingFooterScroll = false
   onFooterScroll = (e) => {
     if (!this.isSyncingFooterScroll) {
       this.isSyncingFooterScroll = true
-      this.tableDomNode.scrollLeft = e.target.scrollLeft
+      this.mainDomEl.scrollLeft = e.target.scrollLeft
     }
     this.isSyncingFooterScroll = false
   }
@@ -62,12 +62,8 @@ class TableViewRender extends Component<{
       const fields = data.attributes.fields
       const rows = data.attributes.rows
       const stats = data.attributes.stats
-      const width = `${fields.length * 150}px`
       return (
-        <div style={{
-            fontSize: 'small',
-            overflow: 'hidden'
-          }}>
+        <div>
           <header>
             <Link to={`/user/${owner.id}`}>{owner.attributes.name}</Link>
             <br/>
@@ -79,57 +75,37 @@ class TableViewRender extends Component<{
             <br/>
             <Cell value={data.attributes.description} valueChanged={newValue=>this.attributeChanged(newValue, 'description')}/>
           </header>
-          <div
-            ref={ (domNode) => { this.tableDomNode = domNode } }
-            onScroll={this.onTableScroll}
-            style={{
-              bottom: '100px',
-              overflowX: 'scroll',
-              overflowY: 'scroll',
-              position: 'absolute',
+          <div style={{
+              fontSize: 'small',
               textAlign: 'left',
-              top: '75px',
               verticalAlign: 'middle',
-              width: '100%',
-            }}
-          >
-            <div style={{
-                border: '1px solid darkgray',
-                display: 'table',
-                position: 'sticky',
-                tableLayout: 'fixed',
-                top: '0px',
-                width: '100%',
-                zIndex: 100,
-              }}>
-              <HeaderRow fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>
-            </div>
-            <div style={{
-                border: '1px solid darkgray',
-                display: 'table',
-                tableLayout: 'fixed',
-                width: '100%',
-              }}>
-              <div style={{
-                display: 'table-row-group',
-                width: width,
-              }}>
-                {rows && rows.map((row, index) => (<Row key={index} rowNum={index} row={row} valueAtPathChanged={this.valueAtPathChanged}/>))}
-              </div>
-            </div>
-          </div>
-          <div
-            ref={ (domNode) => { this.footerDomNode = domNode } }
-            onScroll={this.onFooterScroll}
-            style={{
-              bottom:'0px',
-              height: '100px',
-              overflowX: 'scroll',
-              overflowY: 'scroll',
-              position: 'absolute',
-              width:'100%',
             }}>
-              <TableFooter stats={stats}/>
+            <main
+              ref={ (element) => { this.mainDomEl = element } }
+              onScroll={this.onMainScroll}
+              style={{
+                bottom: '100px',
+                overflow: 'scroll',
+                position: 'absolute',
+                top: '75px',
+                width: '100%',
+              }}
+            >
+              <HeaderRow fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>
+              <TableBody rows={rows} valueAtPathChanged={this.valueAtPathChanged}/>
+            </main>
+            <footer
+              ref={ (element) => { this.footerDomEl = element } }
+              onScroll={this.onFooterScroll}
+              style={{
+                bottom:'0px',
+                height: '100px',
+                overflow: 'scroll',
+                position: 'absolute',
+                width:'100%',
+              }}>
+                <TableFooter stats={stats}/>
+            </footer>
           </div>
         </div>
       )

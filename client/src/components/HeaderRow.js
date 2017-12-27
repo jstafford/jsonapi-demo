@@ -29,29 +29,39 @@ class HeaderRow extends Component<{
       const numStickyCells = stickyCellStyles.length
       return (
         <div style={{
-          backgroundColor: 'gainsboro',
-          display: 'table-header-group',
-          fontWeight: 'bold',
-        }}>
+            border: '1px solid darkgray',
+            display: 'table',
+            position: 'sticky',
+            tableLayout: 'fixed',
+            top: '0px',
+            width: '100%',
+            zIndex: 100,
+          }}>
           <div style={{
-            display: 'table-row',
+            backgroundColor: 'gainsboro',
+            display: 'table-header-group',
+            fontWeight: 'bold',
           }}>
-            {fields.map((field, index) => (
-              <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}
-                data-rh={field.description}>
-                <Cell value={field.title} valueChanged={(newValue) => valueAtPathChanged(`/attributes/fields/${index}/title`, newValue)}/>
-              </div>))
-            }
-          </div>
-           <div style={{
-            display: 'table-row',
-          }}>
-            {fields.map((field, index) => (
-              <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}
-                data-rh={field.description}>
-                {field.type}
-              </div>))
-            }
+            <div style={{
+              display: 'table-row',
+            }}>
+              {fields.map((field, index) => (
+                <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}
+                  data-rh={field.description}>
+                  <Cell value={field.title} valueChanged={(newValue) => valueAtPathChanged(`/attributes/fields/${index}/title`, newValue)}/>
+                </div>))
+              }
+            </div>
+             <div style={{
+              display: 'table-row',
+            }}>
+              {fields.map((field, index) => (
+                <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}
+                  data-rh={field.description}>
+                  {field.type}
+                </div>))
+              }
+            </div>
           </div>
         </div>
       )

@@ -17,7 +17,14 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <div>
+        <div style={{
+            bottom: '0px',
+            left: '0px',
+            overflow: 'hidden',
+            position: 'absolute',
+            right: '0px',
+            top: '0px',
+          }}>
           <ReactHint events delay={100} position='bottom' />
           <Switch>
             <Route exact path="/" component={Users} />
