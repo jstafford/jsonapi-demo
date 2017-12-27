@@ -10,15 +10,22 @@ jsonapiServer.define({
   handlers: usersHandler,
   searchParams: { },
   attributes: {
-    joinDate: jsonapiServer.Joi.date(),
-    tablesCount: jsonapiServer.Joi.number().integer(),
-    stars: jsonapiServer.Joi.number().integer(),
     // name: jsonapiServer.Joi.string().regex(/^[A-Za-z]+[-0-9A-Z_a-z]+[0-9A-Za-z]+$/)
     name: jsonapiServer.Joi.string()
       .description('The user’s public username')
       .example('yertle-the-turtle'),
     tables: jsonapiServer.Joi.many('tables')
-      .description('All of the tables owned by this user')
+      .description('All of the tables owned by this user'),
+    follows: jsonapiServer.Joi.many('users')
+      .description('Relationship to users followed by this user.'),
+    stars: jsonapiServer.Joi.many('tables')
+      .description('Relationship to tables starred by this user.'),
+    meta: jsonapiServer.Joi.object().keys({
+      createdDate: jsonapiServer.Joi.date().iso().allow(null),
+      tablesCount: jsonapiServer.Joi.number().integer().allow(null),
+      updatedDate: jsonapiServer.Joi.date().iso().allow(null),
+      followersCount: jsonapiServer.Joi.number().integer().allow(null),
+    }).allow(null),
   },
   examples: [
     {

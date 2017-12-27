@@ -51,6 +51,36 @@ class UserViewRender extends Component<{
           title: 'Default',
           value: ''
         }, {
+          title: 'Most stars',
+          value: '-meta.starsCount'
+        }, {
+          title: 'Fewest stars',
+          value: 'meta.followersCount'
+        }, {
+          title: 'Most columns',
+          value: '-meta.columnsCount'
+        }, {
+          title: 'Fewest columns',
+          value: 'meta.columnsCount'
+        }, {
+          title: 'Most rows',
+          value: '-meta.rowsCount'
+        }, {
+          title: 'Fewest rows',
+          value: 'meta.rowsCount'
+        }, {
+          title: 'Most recently created',
+          value: '-meta.createdDate'
+        }, {
+          title: 'Least recently created',
+          value: 'meta.createdDate'
+        }, {
+          title: 'Most recently modified',
+          value: '-meta.updatedDate'
+        }, {
+          title: 'Least recently modified',
+          value: 'meta.updatedDate'
+        }, {
           title: 'Title A to Z',
           value: 'title'
         }, {

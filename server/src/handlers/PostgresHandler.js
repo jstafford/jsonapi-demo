@@ -110,7 +110,7 @@ PostgresHandler.prototype.search = async function(request, callback) {
   if (err) {
     return callback(err)
   }
-  let query = `SELECT data, count(*) OVER() AS full_count FROM ${request.params.type}`
+  let query = `SELECT data, meta, count(*) OVER() AS full_count FROM ${request.params.type}`
   let values = []
   if (request.params.filter) {
     query += ' WHERE'
@@ -153,9 +153,11 @@ PostgresHandler.prototype.search = async function(request, callback) {
 
   if (request.params.sort) {
     const dir = request.params.sort.charAt(0) === '-' ? 'DESC' : 'ASC'
-    const sortField = request.params.sort.replace('-', '')
-    values.push(sortField)
-    query += ` ORDER BY data->\$${values.length} ${dir}`
+    const noDirSort = request.params.sort.replace('-', '')
+    const category = noDirSort.startsWith('meta.') ? 'meta' : 'data'
+    const noMetaSort = noDirSort.replace('meta.', '')
+    values.push(noMetaSort)
+    query += ` ORDER BY ${category}->\$${values.length} ${dir}`
   }
   if (request.params.page) {
     const page = request.params.page
@@ -172,7 +174,12 @@ PostgresHandler.prototype.search = async function(request, callback) {
   const pool = getPool()
   const response = await pool.query(query, values)
   if (response && response.rows) {
-    const resources = response.rows.map(row => (row.data))
+    const resources = response.rows.map(row => {
+      if (row.meta) {
+        row.data['meta'] = row.meta
+      }
+      return row.data
+    })
     const total = (response.rows.length > 0) ? response.rows[0].full_count : 0
     // Return the requested resources
     return callback(null, resources, total)
@@ -188,12 +195,15 @@ PostgresHandler.prototype.find = async function(request, callback) {
   if (err) {
     return callback(err)
   }
-  const query = `SELECT data FROM ${request.params.type} WHERE id=$1;`
+  const query = `SELECT data, meta FROM ${request.params.type} WHERE id=$1;`
   const pool = getPool()
   const response = await pool.query(query, [request.params.id])
   if (response && response.rows && response.rows.length) {
     const row = response.rows[0]
     if (row && row.hasOwnProperty('data') && row.data) {
+      if (row.meta) {
+        row.data['meta'] = row.meta
+      }
       // Return the requested resource
       return callback(null, row.data)
     }
@@ -214,12 +224,17 @@ PostgresHandler.prototype.create = async function(request, newResource, callback
   if (err) {
     return callback(err)
   }
-  const query = `INSERT INTO ${request.params.type} (id, data) VALUES($1, $2) RETURNING data;`
+  const meta = newResource.meta ? newResource.meta : null
+  delete newResource.meta
+  const query = `INSERT INTO ${request.params.type} (id, data, meta) VALUES($1, $2, $3) RETURNING data, meta;`
   const pool = getPool()
-  const response = await pool.query(query, [newResource.id, JSON.stringify(newResource)])
+  const response = await pool.query(query, [newResource.id, JSON.stringify(newResource), JSON.stringify(meta)])
   if (response && response.rows && response.rows.length) {
     const row = response.rows[0]
     if (row && row.hasOwnProperty('data') && row.data) {
+      if (row.meta) {
+        row.data['meta'] = row.meta
+      }
       // Return the requested resource
       return callback(null, row.data)
     }
@@ -271,15 +286,30 @@ PostgresHandler.prototype.update = function(request, partialResource, callback) 
       return callback(err)
     }
 
+    // delete meta from resources so it doesn't get persisted in the wrong place
+    const meta = theResource.meta ? theResource.meta : null
+    delete theResource.meta
+
+    const partialMeta = partialResource.meta ? partialResource.meta : null
+    delete partialResource.meta
+
     // Merge the partialResource over the original
     theResource = _.mergeWith(theResource, partialResource, jsonApiPatchCustomizer)
 
-    const query = `UPDATE ${request.params.type} SET data = $1 WHERE id = $2 RETURNING data;`
+    // Merge the meta over the original
+    const newMeta = meta || partialMeta
+      ? _.mergeWith(meta, partialMeta, jsonApiPatchCustomizer)
+      : null
+
+    const query = `UPDATE ${request.params.type} SET data = $1, meta = $2 WHERE id = $3 RETURNING data, meta;`
     const pool = getPool()
-    const response = await pool.query(query, [JSON.stringify(theResource), request.params.id])
+    const response = await pool.query(query, [JSON.stringify(theResource), JSON.stringify(newMeta), request.params.id])
     if (response && response.rows && response.rows.length) {
       const row = response.rows[0]
       if (row && row.hasOwnProperty('data') && row.data) {
+        if (row.meta) {
+          row.data['meta'] = row.meta
+        }
         // Return the requested resource
         return callback(null, row.data)
       }

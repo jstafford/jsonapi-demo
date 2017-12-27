@@ -34,6 +34,13 @@ jsonapiServer.define({
       .example('[["Chongqing","China",30165500],["Shanghai","China",24256800],["Delhi","India",21678794]]'),
     owner: jsonapiServer.Joi.one('users')
       .description('The user who controls this table'),
+    meta: jsonapiServer.Joi.object().keys({
+      createdDate: jsonapiServer.Joi.date().iso().allow(null),
+      columnsCount: jsonapiServer.Joi.number().integer().allow(null),
+      rowsCount: jsonapiServer.Joi.number().integer().allow(null),
+      updatedDate: jsonapiServer.Joi.date().iso().allow(null),
+      starsCount: jsonapiServer.Joi.number().integer().allow(null),
+    }).allow(null),
   },
   examples: [
     {
