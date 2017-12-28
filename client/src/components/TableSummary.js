@@ -16,7 +16,7 @@ class TableRender extends Component<{
           <Link to={`/table/${data.id}`}>{data.attributes.title}</Link>
           <span style={{
             fontSize: 'small',
-          }}> ★: {data.meta.starsCount} Columns: {data.meta.columnsCount} Rows: {data.meta.rowsCount} Created: {data.meta.createdDate} Updated: {data.meta.updatedDate}
+          }}> ★: {data.attributes.starsCount} Columns: {data.attributes.columnsCount} Rows: {data.attributes.rowsCount} Created: {data.attributes.createdDate} Updated: {data.attributes.updatedDate}
           </span>
       </li>
       )

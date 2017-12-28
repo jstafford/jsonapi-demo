@@ -52,34 +52,34 @@ class UserViewRender extends Component<{
           value: ''
         }, {
           title: 'Most stars',
-          value: '-meta.starsCount'
+          value: '-starsCount'
         }, {
           title: 'Fewest stars',
-          value: 'meta.followersCount'
+          value: 'starsCount'
         }, {
           title: 'Most columns',
-          value: '-meta.columnsCount'
+          value: '-columnsCount'
         }, {
           title: 'Fewest columns',
-          value: 'meta.columnsCount'
+          value: 'columnsCount'
         }, {
           title: 'Most rows',
-          value: '-meta.rowsCount'
+          value: '-rowsCount'
         }, {
           title: 'Fewest rows',
-          value: 'meta.rowsCount'
+          value: 'rowsCount'
         }, {
           title: 'Most recently created',
-          value: '-meta.createdDate'
+          value: '-createdDate'
         }, {
           title: 'Least recently created',
-          value: 'meta.createdDate'
+          value: 'createdDate'
         }, {
           title: 'Most recently modified',
-          value: '-meta.updatedDate'
+          value: '-updatedDate'
         }, {
           title: 'Least recently modified',
-          value: 'meta.updatedDate'
+          value: 'updatedDate'
         }, {
           title: 'Title A to Z',
           value: 'title'
@@ -98,7 +98,7 @@ class UserViewRender extends Component<{
             <h1>{data.attributes.name}</h1>
             <p style={{
               fontSize: 'small',
-            }}>★: {data.attributes.stars} Tables: {data.attributes.tablesCount} Member Since: {data.attributes.joinDate}</p>
+            }}>Followers: {data.attributes.followersCount} Tables: {data.attributes.tablesCount} Member Since: {data.attributes.createdDate} Last Active: {data.attributes.updatedDate}</p>
             <span
               style={{
                 fontSize: 'large',

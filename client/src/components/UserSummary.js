@@ -16,7 +16,7 @@ class UserSummaryRender extends Component<{
           <span style={{
             fontSize: 'small',
           }}>
-            Followers: {data.meta.followersCount} Tables: {data.meta.tablesCount} Member Since: {data.meta.createdDate} Last Active: {data.meta.updatedDate}
+            Followers: {data.attributes.followersCount} Tables: {data.attributes.tablesCount} Member Since: {data.attributes.createdDate} Last Active: {data.attributes.updatedDate}
           </span>
         </li>
       )

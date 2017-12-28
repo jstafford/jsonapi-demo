@@ -43,28 +43,28 @@ class UsersRender extends Component < {
         value: ''
       }, {
         title: 'Most followers',
-        value: '-meta.followersCount'
+        value: '-followersCount'
       }, {
         title: 'Fewest followers',
-        value: 'meta.followersCount'
+        value: 'followersCount'
       }, {
         title: 'Most tables',
-        value: '-meta.tablesCount'
+        value: '-tablesCount'
       }, {
         title: 'Fewest tables',
-        value: 'meta.tablesCount'
+        value: 'tablesCount'
       }, {
         title: 'Most recently joined',
-        value: '-meta.createdDate'
+        value: '-createdDate'
       }, {
         title: 'Least recently joined',
-        value: 'meta.createdDate'
+        value: 'createdDate'
       }, {
         title: 'Most recently active',
-        value: '-meta.updatedDate'
+        value: '-updatedDate'
       }, {
         title: 'Least recently active',
-        value: 'meta.updatedDate'
+        value: 'updatedDate'
       }, {
         title: 'User name A to Z',
         value: 'name'

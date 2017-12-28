@@ -80,10 +80,10 @@ const users = {
   name: {
     faker: 'internet.userName'
   },
-  joinDate: {
+  createdDate: {
     faker: 'date.past'
   },
-  lastChange: {
+  updatedDate: {
     faker: 'date.recent'
   },
   tables: {
@@ -205,8 +205,6 @@ const addUserWithLotsOfTables = async (data) => {
 }
 
 const addFollowers = async (data) => {
-  // data.usersmeta = []
-  // data.usersmeta.length = data.users.length
   data.users.forEach((user, index) => {
     user.follows = []
     const count = getRandomInt(data.users.length/8)
@@ -346,8 +344,6 @@ const genGeoStats = (table, index) => {
   return statblock
 }
 
-
-
 const addTableStats = async (data) => {
   data.tables.forEach((table, index) => {
     table.stats = []
@@ -381,48 +377,27 @@ const addTableStats = async (data) => {
   return data
 }
 
-const addMeta = async (data) => {
-  data.usersmeta = []
-  data.usersmeta.length = data.users.length
+const addManagedFields = async (data) => {
   const usersIndex = {}
   data.users.forEach((user, index) => {
     usersIndex[user.id] = index
-    const usermeta = {
-      followersCount: 0,
-      tablesCount: user.tablesCount,
-      createdDate: user.joinDate,
-      updatedDate: user.lastChange,
-    }
-    data.usersmeta[index] = usermeta
-    delete user.tablesCount
-    delete user.joinDate
-    delete user.lastChange
+    user.followersCount = 0
   })
 
-  data.tablesmeta = []
-  data.tablesmeta.length = data.users.length
   const tablesIndex = {}
   data.tables.forEach((table, index) => {
     tablesIndex[table.id] = index
-    const tablemeta = {
-      starsCount: 0,
-      rowsCount: table.rows.length,
-      columnsCount: table.fields.length,
-      createdDate: table.createdDate,
-      updatedDate: table.updatedDate,
-    }
-    data.tablesmeta[index] = tablemeta
-    delete table.createdDate
-    delete table.updatedDate
+    table.starsCount = 0
+    table.rowsCount = table.rows.length
+    table.columnsCount = table.fields.length
   })
-
 
   data.users.forEach(user => {
     user.follows.forEach(following => {
-      data.usersmeta[usersIndex[following.id]].followersCount += 1
+      data.users[usersIndex[following.id]].followersCount += 1
     })
     user.stars.forEach(starred => {
-      data.tablesmeta[tablesIndex[starred.id]].starsCount += 1
+      data.tables[tablesIndex[starred.id]].starsCount += 1
     })
   })
 
@@ -451,23 +426,19 @@ const writeData = async (data) => {
     client.release()
 
     // create tables
-    await pool.query('CREATE TABLE IF NOT EXISTS users (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb, meta jsonb);')
+    await pool.query('CREATE TABLE IF NOT EXISTS users (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
     await pool.query('CREATE INDEX IF NOT EXISTS users_data_idx ON users USING gin(data jsonb_path_ops);')
-    await pool.query('CREATE INDEX IF NOT EXISTS users_meta_idx ON users USING gin(meta jsonb_path_ops);')
 
-    await pool.query('CREATE TABLE IF NOT EXISTS tables (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb, meta jsonb);')
+    await pool.query('CREATE TABLE IF NOT EXISTS tables (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
     await pool.query('CREATE INDEX IF NOT EXISTS tables_data_idx ON tables USING gin(data jsonb_path_ops);')
-    await pool.query('CREATE INDEX IF NOT EXISTS tables_meta_idx ON tables USING gin(meta jsonb_path_ops);')
 
     await Promise.all(data.users.map(async (user, index) => {
-      const meta = data.usersmeta[index]
-      await pool.query('INSERT INTO users (id, data, meta) VALUES($1, $2, $3);', [user.id, JSON.stringify(user), JSON.stringify(meta)])
+      await pool.query('INSERT INTO users (id, data) VALUES($1, $2);', [user.id, JSON.stringify(user)])
       console.log(`saved user ${user.name}`)
     }));
 
     await Promise.all(data.tables.map(async (table, index) => {
-      const meta = data.tablesmeta[index]
-      await pool.query('INSERT INTO tables (id, data, meta) VALUES($1, $2, $3);', [table.id, JSON.stringify(table), JSON.stringify(meta)])
+      await pool.query('INSERT INTO tables (id, data) VALUES($1, $2);', [table.id, JSON.stringify(table)])
       console.log(`saved table ${table.title}`)
     }));
 
@@ -484,6 +455,6 @@ mocker()
   .then(addFollowers,  err => console.error(err))
   .then(addStars,  err => console.error(err))
   .then(addTableStats, err => console.error(err))
-  .then(addMeta, err => console.error(err))
+  .then(addManagedFields, err => console.error(err))
   .then(writeData, err => console.error(err))
   .then(console.log('done'), err => console.error(err))

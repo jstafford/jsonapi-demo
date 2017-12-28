@@ -20,12 +20,11 @@ jsonapiServer.define({
       .description('Relationship to users followed by this user.'),
     stars: jsonapiServer.Joi.many('tables')
       .description('Relationship to tables starred by this user.'),
-    meta: jsonapiServer.Joi.object().keys({
-      createdDate: jsonapiServer.Joi.date().iso().allow(null),
-      tablesCount: jsonapiServer.Joi.number().integer().allow(null),
-      updatedDate: jsonapiServer.Joi.date().iso().allow(null),
-      followersCount: jsonapiServer.Joi.number().integer().allow(null),
-    }).allow(null),
+    // server side managed data (read only to clients)
+    createdDate: jsonapiServer.Joi.date().iso().allow(null).meta('readonly').description('Read only date user joined.'),
+    tablesCount: jsonapiServer.Joi.number().integer().allow(null).meta('readonly').description('Read only count of tables owned by user.'),
+    updatedDate: jsonapiServer.Joi.date().iso().allow(null).meta('readonly').description('Read only date of last user activity.'),
+    followersCount: jsonapiServer.Joi.number().integer().allow(null).meta('readonly').description('Read only count of followers.'),
   },
   examples: [
     {
