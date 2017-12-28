@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import Row from './Row'
+import TableWrapper from './TableWrapper'
 
 class TableBody extends Component<{
   rows: Array<Object>,
@@ -10,18 +11,13 @@ class TableBody extends Component<{
     const {rows, valueAtPathChanged} = this.props
     if (rows) {
       return (
-        <div style={{
-            border: '1px solid darkgray',
-            display: 'table',
-            tableLayout: 'fixed',
-            width: '100%',
-          }}>
+        <TableWrapper>
           <div style={{
             display: 'table-row-group',
           }}>
             {rows && rows.map((row, index) => (<Row key={index} rowNum={index} row={row} valueAtPathChanged={valueAtPathChanged}/>))}
           </div>
-        </div>
+        </TableWrapper>
       )
     } else {
       return null

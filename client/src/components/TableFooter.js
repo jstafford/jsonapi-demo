@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import StatRow from './StatRow'
+import TableWrapper from './TableWrapper'
 
 class TableFooter extends Component<{
   stats: Array<Object>,
@@ -31,21 +32,14 @@ class TableFooter extends Component<{
     if (stats) {
       const statRows = this.convertStatColsToDisplayRows(stats)
       return (
-        <div style={{
-            border: '1px solid darkgray',
-            display: 'table',
-            tableLayout: 'fixed',
-            width: '100%',
-            zIndex: 100,
-          }}>
+        <TableWrapper style={{zIndex: 100}}>
           <div style={{
             backgroundColor: 'gainsboro',
             display: 'table-footer-group',
-            width: `${stats.length * 150}px`
           }}>
             {statRows && statRows.map((statRow, index) => (<StatRow key={index} statRow={statRow}/>))}
           </div>
-        </div>
+        </TableWrapper>
       )
     } else {
       return null

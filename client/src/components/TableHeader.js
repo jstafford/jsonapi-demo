@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import Cell from './Cell'
+import TableWrapper from './TableWrapper'
 
 class TableHeader extends Component<{
   fields: Array<Object>,
@@ -28,13 +29,9 @@ class TableHeader extends Component<{
       ]
       const numStickyCells = stickyCellStyles.length
       return (
-        <div style={{
-            border: '1px solid darkgray',
-            display: 'table',
+        <TableWrapper style={{
             position: 'sticky',
-            tableLayout: 'fixed',
             top: '0px',
-            width: '100%',
             zIndex: 100,
           }}>
           <div style={{
@@ -63,7 +60,7 @@ class TableHeader extends Component<{
               }
             </div>
           </div>
-        </div>
+        </TableWrapper>
       )
     } else {
       return null
