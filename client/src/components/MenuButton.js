@@ -6,14 +6,15 @@ class MenuButton extends Component<{
   menuItems: Array<Object>,
   onSelection: (value, e) => void,
   selectedValue: string,
+  style: Object,
   title: string,
 }> {
   render() {
-    const {menuItems, onSelection, selectedValue, title} = this.props
+    const {menuItems, onSelection, selectedValue, title, style} = this.props
 
     return (
       <Wrapper className="AriaMenuButton" onSelection={onSelection}>
-        <Button className="AriaMenuButton-trigger">{title}</Button>
+        <Button className="AriaMenuButton-trigger" style={style}>{title}</Button>
         <Menu>
           <ul className="AriaMenuButton-menu">
             {

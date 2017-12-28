@@ -35,15 +35,12 @@ class Cell extends Component<{
       border: 'none',
       width: '100%'
     }
-    if (style) {
-      Object.assign(defaultStyle, style)
-    }
 
     return (
       <input
         type='text'
         defaultValue={displayValue}
-        style={defaultStyle}
+        style={{...defaultStyle, ...style}}
         onBlur={onBlur}
         {...props}
       />

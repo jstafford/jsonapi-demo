@@ -3,8 +3,8 @@ import InfiniteScroll from 'react-infinite-scroller'
 import {connect} from 'react-redux'
 import {readEndpoint, safeGet} from 'jsonapi-client-redux'
 import {setUsersSort} from '../appreducer'
-import MenuButton from './MenuButton'
 import Progress from './Progress'
+import UsersSortMenuButton from './UsersSortMenuButton'
 import UserSummary from './UserSummary'
 
 class UserFollowersRender extends Component<{
@@ -38,45 +38,6 @@ class UserFollowersRender extends Component<{
 
   render() {
     const {usersSort, usersIds, total} = this.props
-    const menuItems = [
-      {
-        title: 'Default',
-        value: ''
-      }, {
-        title: 'Most followers',
-        value: '-followersCount'
-      }, {
-        title: 'Fewest followers',
-        value: 'followersCount'
-      }, {
-        title: 'Most tables',
-        value: '-tablesCount'
-      }, {
-        title: 'Fewest tables',
-        value: 'tablesCount'
-      }, {
-        title: 'Most recently joined',
-        value: '-createdDate'
-      }, {
-        title: 'Least recently joined',
-        value: 'createdDate'
-      }, {
-        title: 'Most recently active',
-        value: '-updatedDate'
-      }, {
-        title: 'Least recently active',
-        value: 'updatedDate'
-      }, {
-        title: 'User name A to Z',
-        value: 'name'
-      }, {
-        title: 'User name Z to A',
-        value: '-name'
-      }
-    ]
-    const curSortTitle = menuItems
-      .filter(item => (item.value === usersSort))[0]
-      .title
     return (
       <div>
         <div style={{
@@ -88,7 +49,7 @@ class UserFollowersRender extends Component<{
           right: '0px',
           top: '170px',
         }}>
-          <MenuButton menuItems={menuItems} onSelection={this.handleSelection} selectedValue={usersSort} title={`Sort: ${curSortTitle}`}/>
+          <UsersSortMenuButton onSelection={this.handleSelection} selectedValue={usersSort}/>
           <InfiniteScroll
             pageStart={0}
             loadMore={this.loadMore}

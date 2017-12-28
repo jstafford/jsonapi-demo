@@ -3,9 +3,9 @@ import InfiniteScroll from 'react-infinite-scroller'
 import {connect} from 'react-redux'
 import {safeGet, readEndpoint} from 'jsonapi-client-redux'
 import {setTablesSort} from '../appreducer'
-import MenuButton from './MenuButton'
 import Progress from './Progress'
 import TableSummary from './TableSummary'
+import TablesSortMenuButton from './TablesSortMenuButton'
 
 class UserTablesRender extends Component<{
   tablesIds: Array<string>,
@@ -41,51 +41,6 @@ class UserTablesRender extends Component<{
   render() {
     const {tablesIds, tablesSort, tablesTotal} = this.props
     if (tablesIds) {
-      const menuItems = [
-        {
-          title: 'Default',
-          value: ''
-        }, {
-          title: 'Most stars',
-          value: '-starsCount'
-        }, {
-          title: 'Fewest stars',
-          value: 'starsCount'
-        }, {
-          title: 'Most columns',
-          value: '-columnsCount'
-        }, {
-          title: 'Fewest columns',
-          value: 'columnsCount'
-        }, {
-          title: 'Most rows',
-          value: '-rowsCount'
-        }, {
-          title: 'Fewest rows',
-          value: 'rowsCount'
-        }, {
-          title: 'Most recently created',
-          value: '-createdDate'
-        }, {
-          title: 'Least recently created',
-          value: 'createdDate'
-        }, {
-          title: 'Most recently modified',
-          value: '-updatedDate'
-        }, {
-          title: 'Least recently modified',
-          value: 'updatedDate'
-        }, {
-          title: 'Title A to Z',
-          value: 'title'
-        }, {
-          title: 'Title Z to A',
-          value: '-title'
-        }
-      ]
-      const curSortTitle = menuItems
-        .filter(item => (item.value === tablesSort))[0]
-        .title
       return (
         <div style={{
           bottom: '0px',
@@ -96,7 +51,7 @@ class UserTablesRender extends Component<{
           right: '0px',
           top: '170px',
         }}>
-          <MenuButton menuItems={menuItems} onSelection={this.handleSelection} selectedValue={tablesSort} title={`Sort: ${curSortTitle}`}/>
+          <TablesSortMenuButton onSelection={this.handleSelection} selectedValue={tablesSort}/>
           <InfiniteScroll
             pageStart={0}
             loadMore={this.loadMore}
