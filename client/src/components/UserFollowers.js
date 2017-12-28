@@ -7,24 +7,25 @@ import MenuButton from './MenuButton'
 import Progress from './Progress'
 import UserSummary from './UserSummary'
 
-class UsersRender extends Component < {
-  usersSort: string,
-  usersIds: Array<string>,
+class UserFollowersRender extends Component<{
   total: number,
+  userid: string,
+  usersIds: Array<string>,
+  usersSort: string,
   changeSort: (usersSort) => void,
-  sortUsers: (usersSort) => void,
-  loadMoreUsers: (usersSort, offset) => void
-} > {
+  sortUsers: (userid, usersSort) => void,
+  loadMoreUsers: (userid, usersSort, offset) => void
+}> {
   componentWillMount() {
-    const {loadMoreUsers, usersSort} = this.props
-    loadMoreUsers(usersSort, 0)
+    const {loadMoreUsers, userid, usersSort} = this.props
+    loadMoreUsers(userid, usersSort, 0)
   }
 
   handleSelection = (value, e) => {
-    const {sortUsers, changeSort, usersSort} = this.props
+    const {sortUsers, changeSort, userid, usersSort} = this.props
     if (value !== usersSort) {
       changeSort(value)
-      sortUsers(value)
+      sortUsers(userid, value)
     }
   }
 
@@ -76,28 +77,18 @@ class UsersRender extends Component < {
     const curSortTitle = menuItems
       .filter(item => (item.value === usersSort))[0]
       .title
-
     return (
       <div>
-        <header>
-          <span
-            style={{
-              fontSize: 'large',
-              fontWeight: 'bold'
-            }}>Users
-          </span>
-          <MenuButton menuItems={menuItems} onSelection={this.handleSelection} selectedValue={usersSort} title={`Sort: ${curSortTitle}`}/>
-        </header>
-        <div
-        style={{
+        <div style={{
           bottom: '0px',
           left: '0px',
           margin: '0px',
           overflow: 'auto',
           position: 'absolute',
           right: '0px',
-          top: '50px',
+          top: '170px',
         }}>
+          <MenuButton menuItems={menuItems} onSelection={this.handleSelection} selectedValue={usersSort} title={`Sort: ${curSortTitle}`}/>
           <InfiniteScroll
             pageStart={0}
             loadMore={this.loadMore}
@@ -113,19 +104,21 @@ class UsersRender extends Component < {
           </InfiniteScroll>
         </div>
       </div>
-    );
+    )
   }
 }
 
 const mapStateToProps = (state, ownProps) => {
+  const userid = ownProps.match.params.userid
   const usersSort = state.app.usersSort
-  const sortKey = `sort=${usersSort}`
+  const sortKey = `sort=${usersSort}&filter[follows][id]=${userid}`
   const usersIds = safeGet(state, ['api', 'sorts', 'users', sortKey, 'ids'], null)
   const total = safeGet(state, ['api', 'sorts', 'users', sortKey, 'total'], null)
   return {
-    usersSort,
-    usersIds,
     total,
+    userid,
+    usersIds,
+    usersSort,
   }
 }
 
@@ -133,16 +126,16 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   changeSort: (usersSort) => {
     dispatch(setUsersSort(usersSort))
   },
-  loadMoreUsers: (usersSort, offset) => {
+  loadMoreUsers: (userid, usersSort, offset) => {
     dispatch(
-      readEndpoint(`users?sort=${usersSort}&page[limit]=50&page[offset]=${offset}`)
+      readEndpoint(`users?sort=${usersSort}&filter[follows][id]=${userid}&page[limit]=50&page[offset]=${offset}`)
     )
   },
-  sortUsers: (usersSort) => {
-    dispatch(readEndpoint(`users?sort=${usersSort}`))
+  sortUsers: (userid, usersSort) => {
+    dispatch(readEndpoint(`users?sort=${usersSort}&filter[follows][id]=${userid}`))
   }
 })
 
-const Users = connect(mapStateToProps, mapDispatchToProps)(UsersRender)
+const UserFollowers = connect(mapStateToProps, mapDispatchToProps)(UserFollowersRender)
 
-export default Users
+export default UserFollowers

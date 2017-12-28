@@ -12,7 +12,7 @@ class UserSummaryRender extends Component<{
     const {data} = this.props
     if (data) {
       return (
-        <li><Link to={`/user/${data.id}`}>{data.attributes.name}</Link><br />
+        <li><Link to={`/user/${data.id}/tables`}>{data.attributes.name}</Link><br />
           <span style={{
             fontSize: 'small',
           }}>

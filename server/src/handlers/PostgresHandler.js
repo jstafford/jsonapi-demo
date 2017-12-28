@@ -140,7 +140,11 @@ PostgresHandler.prototype.search = async function(request, callback) {
       } else {
         query += ` data @>`
         if (typeof(filterParam) === 'object') {
-          values.push(`{"${key}":${JSON.stringify(filterParam)}}`)
+          if (request.resourceConfig.attributes[key]._settings.__many) {
+            values.push(`{"${key}":${JSON.stringify([filterParam])}}`)
+          } else {
+            values.push(`{"${key}":${JSON.stringify(filterParam)}}`)
+          }
           query += ` \$${values.length}`
         } else {
           values.push(`{"${key}":"${filterParam}"}`)
