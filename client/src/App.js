@@ -5,9 +5,9 @@ import {
   Route,
   Switch,
 }                         from 'react-router-dom'
+import Home from './components/Home'
 import TableView from './components/TableView'
 import UserView from './components/UserView'
-import Users from './components/Users'
 
 import '../node_modules/react-hint/css/index.css'
 
@@ -27,9 +27,9 @@ class App extends Component {
           }}>
           <ReactHint events delay={100} position='bottom' />
           <Switch>
-            <Route exact path="/" component={Users} />
             <Route path="/user/:userid" component={UserView} />
             <Route path="/table/:tableid" component={TableView} />
+            <Route path="/" component={Home} />
           </Switch>
         </div>
       </Router>

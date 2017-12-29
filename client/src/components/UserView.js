@@ -39,7 +39,7 @@ class UserViewRender extends Component<{
       return (
         <div>
           <header>
-            <Link to={'/'}>All Users</Link>
+            <Link to={'/users'}>All Users</Link>
             <h1>{data.attributes.name}</h1>
             <p style={{
               fontSize: 'small',
@@ -57,7 +57,7 @@ class UserViewRender extends Component<{
     } else {
       return (
         <div>
-          <Link to={'/'}>All Users</Link>
+          <Link to={'/users'}>All Users</Link>
           <Progress/>
         </div>
       )

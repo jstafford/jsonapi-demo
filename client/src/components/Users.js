@@ -38,16 +38,6 @@ class UsersRender extends Component < {
   render() {
     const {usersSort, usersIds, total} = this.props
     return (
-      <div>
-        <header>
-          <span
-            style={{
-              fontSize: 'large',
-              fontWeight: 'bold'
-            }}>Users
-          </span>
-          <UsersSortMenuButton onSelection={this.handleSelection} selectedValue={usersSort}/>
-        </header>
         <div
         style={{
           bottom: '0px',
@@ -56,8 +46,9 @@ class UsersRender extends Component < {
           overflow: 'auto',
           position: 'absolute',
           right: '0px',
-          top: '50px',
+          top: '90px',
         }}>
+          <UsersSortMenuButton onSelection={this.handleSelection} selectedValue={usersSort}/>
           <InfiniteScroll
             pageStart={0}
             loadMore={this.loadMore}
@@ -72,8 +63,7 @@ class UsersRender extends Component < {
             </ul>
           </InfiniteScroll>
         </div>
-      </div>
-    );
+    )
   }
 }
 
