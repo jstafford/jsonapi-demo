@@ -1,5 +1,9 @@
+const fs = require('fs')
 const mocker = require('mocker-data-generator').default
 const pg = require('pg')
+
+const jsonStr = fs.readFileSync('./tags.json')
+const tagChoices = JSON.parse(jsonStr)
 
 // using datatypes and format adapted from https://frictionlessdata.io/specs/table-schema/
 const validTypes = [
@@ -174,6 +178,14 @@ const tables = {
       }
     }
   },
+  tags: [{
+    function: function() {
+      const tag = this.faker.random.arrayElement(tagChoices)
+      return tag
+    },
+    length: 5,
+    fixedLength: false
+  }],
 };
 
 const getRandomInt = (max) => {

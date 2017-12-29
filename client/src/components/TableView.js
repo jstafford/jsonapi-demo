@@ -9,6 +9,7 @@ import Cell from './Cell'
 import TableHeader from './TableHeader'
 import TableBody from './TableBody'
 import TableFooter from './TableFooter'
+import TagBar from './TagBar'
 
 class TableViewRender extends Component<{
   data: table,
@@ -73,6 +74,9 @@ class TableViewRender extends Component<{
               }}/>
             <br/>
             <Cell value={data.attributes.description} valueChanged={newValue=>this.attributeChanged(newValue, 'description')}/>
+            <span style={{
+              fontWeight: 'bold',
+            }}>Tags: </span><TagBar tags={data.attributes.tags}/>
           </header>
           <div style={{
               fontSize: 'small',
@@ -86,7 +90,7 @@ class TableViewRender extends Component<{
                 bottom: '100px',
                 overflow: 'scroll',
                 position: 'absolute',
-                top: '75px',
+                top: '110px',
                 width: '100%',
               }}
             >
