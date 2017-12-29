@@ -1,16 +1,23 @@
 import React, {Component} from 'react'
 import Cell from './Cell'
 
-class Row extends Component<{
+class TableRow extends Component<{
   row: Array<string>,
-  rowNum: number,
-  valueAtPathChanged: (path: string, newValue: string) => void,
+  tips: Array<string>,
+  valueAtColumnChanged: (colNum, newValue: string) => void,
 }> {
+  valueChanged = (newValue, e) => {
+    const {valueAtColumnChanged} = this.props
+    const colNum = e.target.name
+    valueAtColumnChanged(colNum, newValue)
+  }
+
   render() {
-    const {row, rowNum, valueAtPathChanged} = this.props
+    const {row, tips, valueAtColumnChanged} = this.props
     const cellStyle = {
       border: '1px solid darkgray',
       display: 'table-cell',
+      overflow: 'hidden',
       padding: '3px 10px',
       width: '150px',
     }
@@ -33,8 +40,8 @@ class Row extends Component<{
         display: 'table-row',
       }}>
         {row.map((value, index) => (
-          <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}>
-            <Cell value={value} valueChanged={(newValue) => valueAtPathChanged(`/attributes/rows/${rowNum}/${index}`, newValue)}/>
+          <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle} data-rh={tips ? tips[index] : undefined}>
+            <Cell value={value} name={index} valueChanged={valueAtColumnChanged ? this.valueChanged : null}/>
           </div>))
         }
       </div>
@@ -42,4 +49,4 @@ class Row extends Component<{
   }
 }
 
-export default Row
+export default TableRow

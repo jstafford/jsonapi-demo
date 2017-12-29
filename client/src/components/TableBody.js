@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import Row from './Row'
+import TableRow from './TableRow'
 import TableWrapper from './TableWrapper'
 
 class TableBody extends Component<{
@@ -15,7 +15,7 @@ class TableBody extends Component<{
           <div style={{
             display: 'table-row-group',
           }}>
-            {rows && rows.map((row, index) => (<Row key={index} rowNum={index} row={row} valueAtPathChanged={valueAtPathChanged}/>))}
+            {rows && rows.map((row, rowNum) => (<TableRow key={rowNum} row={row} valueAtColumnChanged={(colNum, newValue) => valueAtPathChanged(`/attributes/rows/${rowNum}/${colNum}`, newValue)}/>))}
           </div>
         </TableWrapper>
       )

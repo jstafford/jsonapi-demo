@@ -1,64 +1,41 @@
 import React, {Component} from 'react'
-import Cell from './Cell'
+import TableRow from './TableRow'
 import TableWrapper from './TableWrapper'
 
 class TableHeader extends Component<{
   fields: Array<Object>,
   valueAtPathChanged: (path: string, newValue: string) => void,
 }> {
+
+  valueAtColumnChanged = (colNum, newValue) => {
+    const {valueAtPathChanged} = this.props
+    valueAtPathChanged(`/attributes/fields/${colNum}/title`, newValue)
+  }
+
   render() {
-    const {fields, valueAtPathChanged} = this.props
+    const {fields} = this.props
     if (fields) {
-      const cellStyle = {
-        backgroundColor: 'gainsboro',
-        border: '1px solid darkgray',
-        display: 'table-cell',
-        padding: '3px 10px',
-        width: '150px',
-      }
-      const stickyCellStyles = [
-        {
-          ...cellStyle,
-          position: 'sticky',
-          left: '1px',
-        }, {
-          ...cellStyle,
-          position: 'sticky',
-          left: '173px',
-        }
-      ]
-      const numStickyCells = stickyCellStyles.length
+      const headers = []
+      const types = []
+      const tips = []
+      fields.forEach(field => {
+        headers.push(field.title)
+        types.push(field.type)
+        tips.push(field.description)
+      })
       return (
         <TableWrapper style={{
+            backgroundColor: 'gainsboro',
+            fontWeight: 'bold',
             position: 'sticky',
             top: '0px',
             zIndex: 100,
           }}>
           <div style={{
-            backgroundColor: 'gainsboro',
             display: 'table-header-group',
-            fontWeight: 'bold',
           }}>
-            <div style={{
-              display: 'table-row',
-            }}>
-              {fields.map((field, index) => (
-                <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}
-                  data-rh={field.description}>
-                  <Cell value={field.title} valueChanged={(newValue) => valueAtPathChanged(`/attributes/fields/${index}/title`, newValue)}/>
-                </div>))
-              }
-            </div>
-             <div style={{
-              display: 'table-row',
-            }}>
-              {fields.map((field, index) => (
-                <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle}
-                  data-rh={field.description}>
-                  {field.type}
-                </div>))
-              }
-            </div>
+            <TableRow row={headers} tips={tips} valueAtColumnChanged={this.valueAtColumnChanged}/>
+            <TableRow row={types} tips={tips}/>
           </div>
         </TableWrapper>
       )

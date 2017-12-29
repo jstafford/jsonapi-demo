@@ -3,7 +3,7 @@ import {isNumber} from 'lodash'
 
 class Cell extends Component<{
   value: string,
-  valueChanged: (string) => void,
+  valueChanged: (string, e) => void,
 }> {
   numberFormater = new Intl.NumberFormat()
 
@@ -18,16 +18,9 @@ class Cell extends Component<{
   }
 
   render() {
-    const {style, value, valueChanged, ...props} = this.props
+    const {style, value, valueChanged} = this.props
     const valueIsNumeric = isNumber(value)
     const displayValue = valueIsNumeric ? this.numberFormater.format(value) : value
-    const onBlur = (e) => {
-      const rawValue = e.target.value
-      if (rawValue !== displayValue) {
-        const newValue = valueIsNumeric ? this.toNumber(rawValue) : rawValue
-        valueChanged(newValue)
-      }
-    }
     const defaultStyle = {
       backgroundColor: 'inherit',
       fontSize: 'inherit',
@@ -36,15 +29,34 @@ class Cell extends Component<{
       width: '100%'
     }
 
-    return (
-      <input
-        type='text'
-        defaultValue={displayValue}
-        style={{...defaultStyle, ...style}}
-        onBlur={onBlur}
-        {...props}
-      />
-    )
+    if (valueChanged) {
+      const onBlur = (e) => {
+        const rawValue = e.target.value
+        if (rawValue !== displayValue) {
+          const newValue = valueIsNumeric ? this.toNumber(rawValue) : rawValue
+          valueChanged(newValue, e)
+        }
+      }
+
+      return (
+        <input
+          type='text'
+          defaultValue={displayValue}
+          style={{...defaultStyle, ...style}}
+          onBlur={onBlur}
+        />
+      )
+    } else {
+      return (
+        <span
+          style={{
+            padding: '1px',
+            whiteSpace: 'nowrap',
+            ...defaultStyle,
+            ...style}}
+          >{displayValue}</span>
+      )
+    }
   }
 }
 

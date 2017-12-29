@@ -61,7 +61,6 @@ class TableViewRender extends Component<{
     if (data) {
       const fields = data.attributes.fields
       const rows = data.attributes.rows
-      const stats = data.attributes.stats
       return (
         <div>
           <header>
@@ -104,7 +103,7 @@ class TableViewRender extends Component<{
                 position: 'absolute',
                 width:'100%',
               }}>
-                <TableFooter stats={stats}/>
+                <TableFooter data={data}/>
             </footer>
           </div>
         </div>

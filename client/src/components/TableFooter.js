@@ -1,24 +1,35 @@
 import React, {Component} from 'react'
-import StatRow from './StatRow'
+import table from '../table'
+import TableRow from './TableRow'
 import TableWrapper from './TableWrapper'
 
 class TableFooter extends Component<{
-  stats: Array<Object>,
+  data: table,
 }> {
-  convertStatColsToDisplayRows(stats) {
+  numberFormater = new Intl.NumberFormat()
+
+  convertStatColsToDisplayRows(data) {
     const numRowsReducer = (accumulator, statCol) => (Math.max(accumulator, statCol.length))
+    const fields = data.attributes.fields
+    const stats = data.attributes.stats
     const numRows = stats.reduce(numRowsReducer, 0)
     const numCols = stats.length
     const statRows = []
+    const numberTypes = new Set(['number','integer','boolean',])
 
     for(let row = 0; row<numRows; row++) {
       const statRow = []
       for (let col=0; col<numCols; col++) {
         if (row < stats[col].length) {
           const stat = stats[col][row]
-          statRow.push(`${stat.name}: ${stat.value}`)
+          const colType = fields[col].type
+          let displayValue = stat.value
+          if (numberTypes.has(colType)) {
+            displayValue = this.numberFormater.format(displayValue)
+          }
+          statRow.push((<span><em>{stat.name}:</em> {displayValue}</span>))
         } else {
-          statRow.push('')
+          statRow.push(null)
         }
       }
       statRows.push(statRow)
@@ -28,16 +39,17 @@ class TableFooter extends Component<{
   }
 
   render() {
-    const {stats} = this.props
-    if (stats) {
-      const statRows = this.convertStatColsToDisplayRows(stats)
+    const {data} = this.props
+    if (data) {
+      const statRows = this.convertStatColsToDisplayRows(data)
       return (
-        <TableWrapper style={{zIndex: 100}}>
+        <TableWrapper style={{
+            backgroundColor: 'whitesmoke',
+          }}>
           <div style={{
-            backgroundColor: 'gainsboro',
             display: 'table-footer-group',
           }}>
-            {statRows && statRows.map((statRow, index) => (<StatRow key={index} statRow={statRow}/>))}
+            {statRows && statRows.map((statRow, index) => (<TableRow key={index} row={statRow}/>))}
           </div>
         </TableWrapper>
       )
