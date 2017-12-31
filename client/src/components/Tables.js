@@ -67,9 +67,30 @@ class UsersRender extends Component < {
   }
 }
 
+const searchToFilter = (searchStr) => {
+  let filter = ''
+  if (searchStr) {
+    let cleanStr = searchStr.replace('?', '')
+    let parts = cleanStr.split('&')
+    parts.forEach(part => {
+      const tagParam = 'tags='
+      if (part.startsWith(tagParam)) {
+        cleanStr = part.substring(tagParam.length)
+        cleanStr = unescape(cleanStr)
+        const tags = cleanStr.split(',')
+        tags.forEach(tag => {
+          filter += `&filter[tags][id]=${tag}`
+        })
+      }
+    })
+  }
+  return filter
+}
+
 const mapStateToProps = (state, ownProps) => {
   const tablesSort = state.app.tablesSort
-  const sortKey = `sort=${tablesSort}`
+  const filter = searchToFilter(ownProps.location.search)
+  const sortKey = `sort=${tablesSort}${filter}`
   const tablesIds = safeGet(state, ['api', 'sorts', 'tables', sortKey, 'ids'], null)
   const total = safeGet(state, ['api', 'sorts', 'tables', sortKey, 'total'], null)
   return {
@@ -84,12 +105,14 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     dispatch(setTablesSort(tablesSort))
   },
   loadMoreTables: (tablesSort, offset) => {
+    const filter = searchToFilter(ownProps.location.search)
     dispatch(
-      readEndpoint(`tables?sort=${tablesSort}&page[limit]=50&page[offset]=${offset}`)
+      readEndpoint(`tables?sort=${tablesSort}${filter}&page[limit]=50&page[offset]=${offset}`)
     )
   },
   sortTables: (tablesSort) => {
-    dispatch(readEndpoint(`tables?sort=${tablesSort}`))
+    const filter = searchToFilter(ownProps.location.search)
+    dispatch(readEndpoint(`tables?sort=${tablesSort}${filter}`))
   }
 })
 

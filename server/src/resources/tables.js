@@ -42,11 +42,8 @@ jsonapiServer.define({
       .example('[[{"name":"min","value":0},{"name":"mean","value":50},{"name":"max","value":100}],[{"name":"true","value":45},{"name":"false","value":55}],[{"name":"center","value":"-98.5795, 39.8283"},{"name":"northmost","value":"-156.47741, 71.39040"},{"name":"southmost","value":"-155.67927, 18.91023"}]]'),
     owner: jsonapiServer.Joi.one('users')
       .description('The user who controls this table'),
-    tags: jsonapiServer.Joi.array().items(
-        jsonapiServer.Joi.string().allow(null),
-      ).sparse(true)
-      .description('Tags for the table')
-      .example('["linguistics", "internet", "data analysis"]'),
+    tags: jsonapiServer.Joi.many('tags')
+      .description('Tags for the table'),
 
     // server side managed data (read only to clients)
     createdDate: jsonapiServer.Joi.date().iso().allow(null).meta('readonly').description('Read only date table created.'),

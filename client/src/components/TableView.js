@@ -59,7 +59,7 @@ class TableViewRender extends Component<{
   render() {
     const {data, owner} = this.props
 
-    if (data) {
+    if (data && owner) {
       const fields = data.attributes.fields
       const rows = data.attributes.rows
       return (
@@ -76,7 +76,7 @@ class TableViewRender extends Component<{
             <Cell value={data.attributes.description} valueChanged={newValue=>this.attributeChanged(newValue, 'description')}/>
             <span style={{
               fontWeight: 'bold',
-            }}>Tags: </span><TagBar tags={data.attributes.tags}/>
+            }}>Tags: </span><TagBar tags={data.relationships.tags.data}/>
           </header>
           <div style={{
               fontSize: 'small',

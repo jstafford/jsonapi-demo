@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
 class TagBar extends Component<{
-  tags: Array<string>,
+  tags: Array<Object>,
 }> {
   render() {
     const {tags} = this.props
@@ -18,7 +18,7 @@ class TagBar extends Component<{
     return (
       <span>
         {tags.map((tag, index) => (
-          <span key={index} style={defaultStyle}>{tag}</span>
+          <span key={index} style={defaultStyle}>{tag.id}</span>
         ))}
       </span>
     )

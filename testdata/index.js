@@ -181,7 +181,10 @@ const tables = {
   tags: [{
     function: function() {
       const tag = this.faker.random.arrayElement(tagChoices)
-      return tag
+      return {
+        type: 'tags',
+        id: tag
+      }
     },
     length: 5,
     fixedLength: false
@@ -215,6 +218,16 @@ const addUserWithLotsOfTables = async (data) => {
 
   return data
 }
+
+const addTags = async (data) => {
+  const uniqueTagsSet = new Set(tagChoices)
+  const uniqueTags = Array.from(uniqueTagsSet)
+  const tags = uniqueTags.map(tagName => ({type:'tags', id: tagName, count:0}))
+  data.tags = tags
+
+  return data
+}
+
 
 const addFollowers = async (data) => {
   data.users.forEach((user, index) => {
@@ -404,12 +417,23 @@ const addManagedFields = async (data) => {
     table.columnsCount = table.fields.length
   })
 
+  const tagsIndex = {}
+  data.tags.forEach((tag, index) => {
+    tagsIndex[tag.id] = index
+  })
+
   data.users.forEach(user => {
     user.follows.forEach(following => {
       data.users[usersIndex[following.id]].followersCount += 1
     })
     user.stars.forEach(starred => {
       data.tables[tablesIndex[starred.id]].starsCount += 1
+    })
+  })
+
+  data.tables.forEach(table => {
+    table.tags.forEach(tag => {
+      data.tags[tagsIndex[tag.id]].count += 1
     })
   })
 
@@ -444,6 +468,9 @@ const writeData = async (data) => {
     await pool.query('CREATE TABLE IF NOT EXISTS tables (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
     await pool.query('CREATE INDEX IF NOT EXISTS tables_data_idx ON tables USING gin(data jsonb_path_ops);')
 
+    await pool.query('CREATE TABLE IF NOT EXISTS tags (id varchar NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
+    await pool.query('CREATE INDEX IF NOT EXISTS tags_data_idx ON tags USING gin(data jsonb_path_ops);')
+
     await Promise.all(data.users.map(async (user, index) => {
       await pool.query('INSERT INTO users (id, data) VALUES($1, $2);', [user.id, JSON.stringify(user)])
       console.log(`saved user ${user.name}`)
@@ -452,6 +479,11 @@ const writeData = async (data) => {
     await Promise.all(data.tables.map(async (table, index) => {
       await pool.query('INSERT INTO tables (id, data) VALUES($1, $2);', [table.id, JSON.stringify(table)])
       console.log(`saved table ${table.title}`)
+    }));
+
+    await Promise.all(data.tags.map(async (tag, index) => {
+      await pool.query('INSERT INTO tags (id, data) VALUES($1, $2);', [tag.id, JSON.stringify(tag)])
+      console.log(`saved tag ${tag.id}`)
     }));
 
   } catch (err) {
@@ -464,6 +496,7 @@ mocker()
   .schema('tables', tables, 2000)
   .build()
   .then(addUserWithLotsOfTables, err => console.error(err))
+  .then(addTags,  err => console.error(err))
   .then(addFollowers,  err => console.error(err))
   .then(addStars,  err => console.error(err))
   .then(addTableStats, err => console.error(err))
