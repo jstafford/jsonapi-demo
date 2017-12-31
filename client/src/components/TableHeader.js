@@ -1,27 +1,31 @@
 import React, {Component} from 'react'
+import table from '../table'
 import TableRow from './TableRow'
 import TableWrapper from './TableWrapper'
 
 class TableHeader extends Component<{
-  fields: Array<Object>,
-  valueAtPathChanged: (path: string, newValue: string) => void,
+  table: table,
+  tableinfo: Object,
+  resourceChanged: (data: Object, path: string, newValue: string) => void,
 }> {
 
   valueAtColumnChanged = (colNum, newValue) => {
-    const {valueAtPathChanged} = this.props
-    valueAtPathChanged(`/attributes/fields/${colNum}/title`, newValue)
+    const {tableinfo, resourceChanged} = this.props
+    resourceChanged(tableinfo, `/attributes/fields/${colNum}/title`, newValue)
   }
 
   render() {
-    const {fields} = this.props
-    if (fields) {
+    const {table, tableinfo} = this.props
+    if (table &&  tableinfo) {
       const headers = []
       const types = []
       const tips = []
-      fields.forEach(field => {
+      tableinfo.attributes.fields.forEach(field => {
         headers.push(field.title)
-        types.push(field.type)
         tips.push(field.description)
+      })
+      table.attributes.fields.forEach(field => {
+        types.push(field.type)
       })
       return (
         <TableWrapper style={{

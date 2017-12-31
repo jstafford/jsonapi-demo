@@ -12,27 +12,24 @@ import TableFooter from './TableFooter'
 import TagBar from './TagBar'
 
 class TableViewRender extends Component<{
-  data: table,
   owner: user,
-  tableid: String,
-  ensureTable: (id:string) => void,
-  resourceChanged: (path: string, newValue: string) => void,
+  table: table,
+  tableid: string,
+  tableinfo: Object,
+  tableinfoid: string,
+  ensureTableinfo: (id: string) => void,
+  resourceChanged: (data: Object, path: string, newValue: string) => void,
 }> {
   componentWillMount () {
-    const {ensureTable, tableid} = this.props
-    if (tableid) {
-      ensureTable(tableid)
+    const {ensureTableinfo, tableinfoid} = this.props
+    if (tableinfoid) {
+      ensureTableinfo(tableinfoid)
     }
   }
 
-  attributeChanged = (newValue, attribute) => {
-    const {data, resourceChanged} = this.props
-    resourceChanged(data, `/attributes/${attribute}`, newValue)
-  }
-
-  valueAtPathChanged = (path, newValue) => {
-    const {data, resourceChanged} = this.props
-    resourceChanged(data, path, newValue)
+  infoAttributeChanged = (newValue, attribute) => {
+    const {tableinfo, resourceChanged} = this.props
+    resourceChanged(tableinfo, `/attributes/${attribute}`, newValue)
   }
 
   mainDomEl = null
@@ -57,26 +54,24 @@ class TableViewRender extends Component<{
   }
 
   render() {
-    const {data, owner} = this.props
+    const {owner, table, tableinfo, resourceChanged} = this.props
 
-    if (data && owner) {
-      const fields = data.attributes.fields
-      const rows = data.attributes.rows
+    if (owner && table && tableinfo) {
       return (
         <div>
           <header>
             <Link to={`/user/${owner.id}`}>{owner.attributes.name}</Link>
             <br/>
-            <Cell value={data.attributes.title} valueChanged={newValue=>this.attributeChanged(newValue, 'title')}
+            <Cell value={tableinfo.attributes.title} valueChanged={newValue=>this.infoAttributeChanged(newValue, 'title')}
               style={{
                 fontSize: 'x-large',
                 fontWeight: 'bold',
               }}/>
             <br/>
-            <Cell value={data.attributes.description} valueChanged={newValue=>this.attributeChanged(newValue, 'description')}/>
+            <Cell value={tableinfo.attributes.description} valueChanged={newValue=>this.infoAttributeChanged(newValue, 'description')}/>
             <span style={{
               fontWeight: 'bold',
-            }}>Tags: </span><TagBar tags={data.relationships.tags.data}/>
+            }}>Tags: </span><TagBar tags={tableinfo.relationships.tags.data}/>
           </header>
           <div style={{
               fontSize: 'small',
@@ -94,8 +89,8 @@ class TableViewRender extends Component<{
                 width: '100%',
               }}
             >
-              <TableHeader fields={fields} valueAtPathChanged={this.valueAtPathChanged}/>
-              <TableBody rows={rows} valueAtPathChanged={this.valueAtPathChanged}/>
+              <TableHeader table={table} tableinfo={tableinfo} resourceChanged={resourceChanged}/>
+              <TableBody table={table} resourceChanged={resourceChanged}/>
             </main>
             <footer
               ref={ (element) => { this.footerDomEl = element } }
@@ -107,7 +102,7 @@ class TableViewRender extends Component<{
                 position: 'absolute',
                 width:'100%',
               }}>
-                <TableFooter data={data}/>
+                <TableFooter table={table}/>
             </footer>
           </div>
         </div>
@@ -119,23 +114,27 @@ class TableViewRender extends Component<{
 }
 
 const mapState = (state: GenericMap, ownProps: Object): Object => {
-  const tableid = ownProps.match.params.tableid
-  const data = safeGet(state, ['api', 'resources', 'tables', tableid], null)
-  const ownerId = data ? data.relationships.owner.data.id : undefined
-  const owner = safeGet(state, ['api', 'resources', 'users', ownerId], null)
+  const tableinfoid = ownProps.match.params.tableid
+  const tableinfo = safeGet(state, ['api', 'resources', 'tableinfos', tableinfoid], null)
+  const ownerid = tableinfo ? tableinfo.relationships.owner.data.id : undefined
+  const tableid = tableinfo ? tableinfo.relationships.table.data.id : undefined
+  const owner = safeGet(state, ['api', 'resources', 'users', ownerid], null)
+  const table = safeGet(state, ['api', 'resources', 'tables', tableid], null)
   return {
+    owner,
+    table,
     tableid,
-    data,
-    owner
+    tableinfo,
+    tableinfoid,
   }
 }
 
 const mapDisp = (dispatch: Dispatch<Action>, ownProps: Object): Object => (
   {
-    ensureTable: (id: string): void => {
-      dispatch(readEndpoint(`tables/${id}?include=owner`))
+    ensureTableinfo: (id: string): void => {
+      dispatch(readEndpoint(`tableinfos/${id}?include=owner,table`))
     },
-    resourceChanged: (data: table, path: string, newValue: string): void => {
+    resourceChanged: (data: Object, path: string, newValue: string): void => {
       // console.log(`path: ${path}, value: ${newValue}`)
       const patch = generatePatch(data, path, newValue)
       console.log(JSON.stringify(patch))

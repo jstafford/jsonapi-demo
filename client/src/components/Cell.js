@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
-import {isNumber} from 'lodash'
+import {isBoolean, isNumber} from 'lodash'
 
 class Cell extends Component<{
+  colNum: number,
   value: string,
   valueChanged: (string, e) => void,
 }> {
@@ -18,9 +19,10 @@ class Cell extends Component<{
   }
 
   render() {
-    const {style, value, valueChanged} = this.props
+    const {colNum, style, value, valueChanged} = this.props
     const valueIsNumeric = isNumber(value)
-    const displayValue = valueIsNumeric ? this.numberFormater.format(value) : value
+    const valueIsBoolean = isBoolean(value)
+    const displayValue = valueIsNumeric ? this.numberFormater.format(value) : valueIsBoolean ? value.toString() : value
     const defaultStyle = {
       backgroundColor: 'inherit',
       fontSize: 'inherit',
@@ -33,13 +35,14 @@ class Cell extends Component<{
       const onBlur = (e) => {
         const rawValue = e.target.value
         if (rawValue !== displayValue) {
-          const newValue = valueIsNumeric ? this.toNumber(rawValue) : rawValue
+          const newValue = valueIsNumeric ? this.toNumber(rawValue) : valueIsBoolean ? (rawValue === 'true') : rawValue
           valueChanged(newValue, e)
         }
       }
 
       return (
         <input
+          name={'' + colNum}
           type='text'
           defaultValue={displayValue}
           style={{...defaultStyle, ...style}}

@@ -4,14 +4,14 @@ import TableRow from './TableRow'
 import TableWrapper from './TableWrapper'
 
 class TableFooter extends Component<{
-  data: table,
+  table: table,
 }> {
   numberFormater = new Intl.NumberFormat()
 
-  convertStatColsToDisplayRows(data) {
+  convertStatColsToDisplayRows(table) {
     const numRowsReducer = (accumulator, statCol) => (Math.max(accumulator, statCol.length))
-    const fields = data.attributes.fields
-    const stats = data.attributes.stats
+    const fields = table.attributes.fields
+    const stats = table.attributes.stats
     const numRows = stats.reduce(numRowsReducer, 0)
     const numCols = stats.length
     const statRows = []
@@ -39,9 +39,9 @@ class TableFooter extends Component<{
   }
 
   render() {
-    const {data} = this.props
-    if (data) {
-      const statRows = this.convertStatColsToDisplayRows(data)
+    const {table} = this.props
+    if (table) {
+      const statRows = this.convertStatColsToDisplayRows(table)
       return (
         <TableWrapper style={{
             backgroundColor: 'whitesmoke',

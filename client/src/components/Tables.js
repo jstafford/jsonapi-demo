@@ -91,8 +91,8 @@ const mapStateToProps = (state, ownProps) => {
   const tablesSort = state.app.tablesSort
   const filter = searchToFilter(ownProps.location.search)
   const sortKey = `sort=${tablesSort}${filter}`
-  const tablesIds = safeGet(state, ['api', 'sorts', 'tables', sortKey, 'ids'], null)
-  const total = safeGet(state, ['api', 'sorts', 'tables', sortKey, 'total'], null)
+  const tablesIds = safeGet(state, ['api', 'sorts', 'tableinfos', sortKey, 'ids'], null)
+  const total = safeGet(state, ['api', 'sorts', 'tableinfos', sortKey, 'total'], null)
   return {
     tablesSort,
     tablesIds,
@@ -107,12 +107,12 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   loadMoreTables: (tablesSort, offset) => {
     const filter = searchToFilter(ownProps.location.search)
     dispatch(
-      readEndpoint(`tables?sort=${tablesSort}${filter}&page[limit]=50&page[offset]=${offset}`)
+      readEndpoint(`tableinfos?sort=${tablesSort}${filter}&page[limit]=50&page[offset]=${offset}`)
     )
   },
   sortTables: (tablesSort) => {
     const filter = searchToFilter(ownProps.location.search)
-    dispatch(readEndpoint(`tables?sort=${tablesSort}${filter}`))
+    dispatch(readEndpoint(`tableinfos?sort=${tablesSort}${filter}`))
   }
 })
 

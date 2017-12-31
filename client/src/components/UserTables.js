@@ -79,8 +79,8 @@ const mapState = (state: GenericMap, ownProps: Object): Object => {
   const userid = ownProps.match.params.userid
   const tablesSort = state.app.tablesSort
   const sortKey = `sort=${tablesSort}&filter[owner][id]=${userid}`
-  const tablesIds = safeGet(state, ['api', 'sorts', 'tables', sortKey, 'ids'], null)
-  const tablesTotal = safeGet(state, ['api', 'sorts', 'tables', sortKey, 'total'], null)
+  const tablesIds = safeGet(state, ['api', 'sorts', 'tableinfos', sortKey, 'ids'], null)
+  const tablesTotal = safeGet(state, ['api', 'sorts', 'tableinfos', sortKey, 'total'], null)
   return {
     tablesIds,
     tablesSort,
@@ -96,11 +96,11 @@ const mapDisp = (dispatch: Dispatch<Action>, ownProps: Object): Object => (
     },
     loadMoreTables: (tablesSort, userid, offset) => {
       dispatch(
-        readEndpoint(`tables?sort=${tablesSort}&filter[owner][id]=${userid}&page[limit]=50&page[offset]=${offset}`)
+        readEndpoint(`tableinfos?sort=${tablesSort}&filter[owner][id]=${userid}&page[limit]=50&page[offset]=${offset}`)
       )
     },
     sortTables: (tablesSort, userid) => {
-      dispatch(readEndpoint(`tables?sort=${tablesSort}&filter[owner][id]=${userid}`))
+      dispatch(readEndpoint(`tableinfos?sort=${tablesSort}&filter[owner][id]=${userid}`))
     },
   }
 )

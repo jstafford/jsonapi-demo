@@ -90,7 +90,7 @@ const users = {
   updatedDate: {
     faker: 'date.recent'
   },
-  tables: {
+  tableinfos: {
     function: function() {
       return []
     }
@@ -109,11 +109,12 @@ const users = {
       })
     }
   },
-};
-const tables = {
+}
+
+const tableinfos = {
   type: {
     function: function() {
-      return 'tables'
+      return 'tableinfos'
     }
   },
   id: {
@@ -138,7 +139,7 @@ const tables = {
   fields: [{
     function: function() {
       const randomWord = this.faker.random.word().toLowerCase()
-      const name = this.faker.helpers.slugify(randomWord)
+      const name = this.faker.helpers.slugify(randomWord).replace('-', '_')
       const title = randomWord.replace(/^(.)|\s(.)/g, ($1) => $1.toUpperCase())
       return {
         name: name,
@@ -167,8 +168,8 @@ const tables = {
   owner: {
     function: function() {
       const owner = this.faker.random.arrayElement(this.db.users)
-      owner.tables.push({
-        type: 'tables',
+      owner.tableinfos.push({
+        type: 'tableinfos',
         id: this.object.id
       })
       owner.tablesCount += 1
@@ -189,7 +190,18 @@ const tables = {
     length: 5,
     fixedLength: false
   }],
-};
+}
+
+const tables = {
+  type: {
+    function: function() {
+      return 'tables'
+    }
+  },
+  id: {
+    faker: 'random.uuid'
+  }
+}
 
 const getRandomInt = (max) => {
   max = Math.floor(max)
@@ -208,13 +220,53 @@ const getRandomInts = (max, count, exclude) => {
 }
 
 const addUserWithLotsOfTables = async (data) => {
+  const numTables = 200
   const newData = await mocker()
     .schema('users', users, 1)
-    .schema('tables', tables, 200)
+    .schema('tables', tables, numTables)
+    .schema('tableinfos', tableinfos, numTables)
     .build()
 
   data.users = data.users.concat(newData.users)
   data.tables = data.tables.concat(newData.tables)
+  data.tableinfos = data.tableinfos.concat(newData.tableinfos)
+
+  return data
+}
+
+const splitOutTables = async (data) => {
+  const tables = data.tables
+  data.tableinfos.forEach((tableinfo, index) => {
+    table = tables[index]
+    // move some fields to only live in tables
+    table.rows = tableinfo.rows
+    delete tableinfo.rows
+
+    // split fields between tableinfo and table
+    table.fields = []
+    table.fields.length = tableinfo.fields.length
+    tableinfo.fields.forEach((field, i) => {
+      const tableFields = {
+        name: field.name,
+        type: field.type,
+      }
+      table.fields[i] = tableFields
+      delete field.name
+      delete field.type
+    })
+
+    // create table relation
+    tableinfo.table = {
+      type: 'tables',
+      id: table.id,
+    }
+
+    // create info relation
+    table.info = {
+      type: 'tableinfos',
+      id: tableinfo.id,
+    }
+  })
 
   return data
 }
@@ -248,10 +300,10 @@ const addFollowers = async (data) => {
 const addStars = async (data) => {
   data.users.forEach((user, index) => {
     user.stars = []
-    const count = getRandomInt(data.tables.length/5)
-    const indexes = getRandomInts(data.tables.length, count, NaN)
+    const count = getRandomInt(data.tableinfos.length/5)
+    const indexes = getRandomInts(data.tableinfos.length, count, NaN)
     for (let i=0; i < count; i++) {
-      const starred = data.tables[indexes[i]]
+      const starred = data.tableinfos[indexes[i]]
       user.stars.push({
         type: starred.type,
         id: starred.id
@@ -261,7 +313,7 @@ const addStars = async (data) => {
   return data
 }
 
-const totalReducer = (accumulator, currentValue) => accumulator + currentValue;
+const totalReducer = (accumulator, currentValue) => accumulator + currentValue
 
 const genNumberStats = (table, index) => {
   const values = []
@@ -409,12 +461,12 @@ const addManagedFields = async (data) => {
     user.followersCount = 0
   })
 
-  const tablesIndex = {}
-  data.tables.forEach((table, index) => {
-    tablesIndex[table.id] = index
-    table.starsCount = 0
-    table.rowsCount = table.rows.length
-    table.columnsCount = table.fields.length
+  const tableinfosIndex = {}
+  data.tableinfos.forEach((tableinfo, index) => {
+    tableinfosIndex[tableinfo.id] = index
+    tableinfo.starsCount = 0
+    tableinfo.rowsCount = data.tables[index].rows.length
+    tableinfo.columnsCount = data.tables[index].fields.length
   })
 
   const tagsIndex = {}
@@ -427,12 +479,12 @@ const addManagedFields = async (data) => {
       data.users[usersIndex[following.id]].followersCount += 1
     })
     user.stars.forEach(starred => {
-      data.tables[tablesIndex[starred.id]].starsCount += 1
+      data.tableinfos[tableinfosIndex[starred.id]].starsCount += 1
     })
   })
 
-  data.tables.forEach(table => {
-    table.tags.forEach(tag => {
+  data.tableinfos.forEach(tableinfo => {
+    tableinfo.tags.forEach(tag => {
       data.tags[tagsIndex[tag.id]].count += 1
     })
   })
@@ -465,6 +517,11 @@ const writeData = async (data) => {
     await pool.query('CREATE TABLE IF NOT EXISTS users (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
     await pool.query('CREATE INDEX IF NOT EXISTS users_data_idx ON users USING gin(data jsonb_path_ops);')
 
+    await pool.query('CREATE TABLE IF NOT EXISTS tableinfos (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
+    await pool.query('CREATE INDEX IF NOT EXISTS tableinfos_data_idx ON tableinfos USING gin(data jsonb_path_ops);')
+    await pool.query('CREATE OR REPLACE FUNCTION tableinfos_fts_gin(data jsonb) RETURNS tsvector AS $BODY$ SELECT to_tsvector(data); $BODY$ LANGUAGE sql IMMUTABLE;')
+    await pool.query('CREATE INDEX IF NOT EXISTS tableinfos_fts_idx ON tableinfos USING gin(tableinfos_fts_gin(data));')
+
     await pool.query('CREATE TABLE IF NOT EXISTS tables (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
     await pool.query('CREATE INDEX IF NOT EXISTS tables_data_idx ON tables USING gin(data jsonb_path_ops);')
 
@@ -474,28 +531,37 @@ const writeData = async (data) => {
     await Promise.all(data.users.map(async (user, index) => {
       await pool.query('INSERT INTO users (id, data) VALUES($1, $2);', [user.id, JSON.stringify(user)])
       console.log(`saved user ${user.name}`)
-    }));
+    }))
+
+    await Promise.all(data.tableinfos.map(async (tableinfo, index) => {
+      await pool.query('INSERT INTO tableinfos (id, data) VALUES($1, $2);', [tableinfo.id, JSON.stringify(tableinfo)])
+      console.log(`saved tableinfos ${tableinfo.title}`)
+    }))
 
     await Promise.all(data.tables.map(async (table, index) => {
       await pool.query('INSERT INTO tables (id, data) VALUES($1, $2);', [table.id, JSON.stringify(table)])
-      console.log(`saved table ${table.title}`)
-    }));
+      console.log(`saved table ${data.tableinfos[index].title}`)
+    }))
 
     await Promise.all(data.tags.map(async (tag, index) => {
       await pool.query('INSERT INTO tags (id, data) VALUES($1, $2);', [tag.id, JSON.stringify(tag)])
       console.log(`saved tag ${tag.id}`)
-    }));
+    }))
 
   } catch (err) {
     throw err
   }
 }
 
+const numUsers = 200
+const numTables = 2000
 mocker()
-  .schema('users', users, 200)
-  .schema('tables', tables, 2000)
+  .schema('users', users, numUsers)
+  .schema('tables', tables, numTables)
+  .schema('tableinfos', tableinfos, numTables)
   .build()
   .then(addUserWithLotsOfTables, err => console.error(err))
+  .then(splitOutTables, err => console.error(err))
   .then(addTags,  err => console.error(err))
   .then(addFollowers,  err => console.error(err))
   .then(addStars,  err => console.error(err))

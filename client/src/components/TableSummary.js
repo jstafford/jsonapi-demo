@@ -28,7 +28,7 @@ class TableRender extends Component<{
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const data = safeGet(state, ['api', 'resources', 'tables', ownProps.tableid], null)
+  const data = safeGet(state, ['api', 'resources', 'tableinfos', ownProps.tableid], null)
   return {
     data
   }

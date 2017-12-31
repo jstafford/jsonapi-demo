@@ -41,7 +41,7 @@ class TableRow extends Component<{
       }}>
         {row.map((value, index) => (
           <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle} data-rh={tips ? tips[index] : undefined}>
-            <Cell value={value} name={index} valueChanged={valueAtColumnChanged ? this.valueChanged : null}/>
+            <Cell value={value} colNum={index} valueChanged={valueAtColumnChanged ? this.valueChanged : null}/>
           </div>))
         }
       </div>

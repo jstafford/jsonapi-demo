@@ -10,26 +10,18 @@ jsonapiServer.define({
   handlers: tablesHandler,
   searchParams: {},
   attributes: {
-    title: jsonapiServer.Joi.string()
-      .description('The table title')
-      .example('World’s Larget Cities'),
-    description: jsonapiServer.Joi.string()
-      .description('A concise description of the tabe.')
-      .example('List of largest cites using the city proper administrative boundaries to determine population.'),
     fields: jsonapiServer.Joi.array().items(jsonapiServer.Joi.object().keys({
         name: jsonapiServer.Joi.string(),
-        title: jsonapiServer.Joi.string(),
-        description: jsonapiServer.Joi.string(),
         type: jsonapiServer.Joi.string().valid('string', 'number', 'integer', 'boolean', 'date', 'time', 'datetime', 'year', 'yearmonth', 'geopoint')
       }).allow(null))
       .description('Definition for the fields of the table')
-      .example('[{"title":"City"},{"title":"Nation"},{"title":"Population"}]'),
+      .example('[{"name":"city"},{"name":"nation"},{"name":"population"}]'),
     rows: jsonapiServer.Joi.array().items(jsonapiServer.Joi.array().items(
         jsonapiServer.Joi.string().allow(null),
         jsonapiServer.Joi.number(),
         jsonapiServer.Joi.date(),
         jsonapiServer.Joi.boolean()
-      ).sparse(true)).sparse(true)
+      ).sparse(true).allow(null)).sparse(true)
       .description('The rows of the table')
       .example('[["Chongqing","China",30165500],["Shanghai","China",24256800],["Delhi","India",21678794]]'),
     stats: jsonapiServer.Joi.array().items(jsonapiServer.Joi.array().items(
@@ -40,55 +32,44 @@ jsonapiServer.define({
       ).sparse(true)).sparse(true)
       .description('Array of statistics for the each row, arranged by column')
       .example('[[{"name":"min","value":0},{"name":"mean","value":50},{"name":"max","value":100}],[{"name":"true","value":45},{"name":"false","value":55}],[{"name":"center","value":"-98.5795, 39.8283"},{"name":"northmost","value":"-156.47741, 71.39040"},{"name":"southmost","value":"-155.67927, 18.91023"}]]'),
-    owner: jsonapiServer.Joi.one('users')
-      .description('The user who controls this table'),
-    tags: jsonapiServer.Joi.many('tags')
-      .description('Tags for the table'),
-
-    // server side managed data (read only to clients)
-    createdDate: jsonapiServer.Joi.date().iso().allow(null).meta('readonly').description('Read only date table created.'),
-    columnsCount: jsonapiServer.Joi.number().integer().allow(null).meta('readonly').description('Read only count of columns in table.'),
-    rowsCount: jsonapiServer.Joi.number().integer().allow(null).meta('readonly').description('Read only count of rows in table.'),
-    updatedDate: jsonapiServer.Joi.date().iso().allow(null).meta('readonly').description('Read only date table last modified.'),
-    starsCount: jsonapiServer.Joi.number().integer().allow(null).meta('readonly').description('Read only count of stars for table.'),
+    info: jsonapiServer.Joi.one('tableinfos')
+      .description('The meta info about this table'),
   },
   examples: [
     {
-      id: 'A2930D1F-BB4B-4AA3-8A77-6752A17D3A38',
+      id: 'AB0943D3-7540-4DCB-AE33-7726F14EA17F',
       type: 'tables',
-      title: 'World’s Larget Cities',
       fields: [
-        {title: 'City'},
-        {title: 'Nation'},
-        {title: 'Population'},
+        {name: 'city', type: 'string'},
+        {name: 'nation', type: 'string'},
+        {name: 'population', type: 'integer'},
       ],
       rows: [
         ['Chongqing','China',30165500],
         ['Shanghai','China',24256800],
         ['Delhi','India',21678794],
       ],
-      owner: {
-        type: 'users',
-        id: '42D2F0C8-407D-48DB-A944-D6D68D28DE2A',
-      }
+      info: {
+        type: 'tableinfos',
+        id: 'A2930D1F-BB4B-4AA3-8A77-6752A17D3A38',
+      },
     },
     {
-      id: 'F6E7A2B8-F522-411F-BA1E-C28AB85A4E7C',
+      id: 'BDA58C68-867D-4B31-9EED-CBB083FA76ED',
       type: 'tables',
-      title: '2017 World Happiness Report',
       fields: [
-        {title: 'Overall Rank'},
-        {title: 'Change in rank'},
-        {title: 'Country'},
-        {title: 'Score'},
-        {title: 'Change in score'},
-        {title: 'GDP per capita'},
-        {title: 'Social support'},
-        {title: 'Healthy life expectancy'},
-        {title: 'Freedom to make life choices'},
-        {title: 'Generosity'},
-        {title: 'Trust'},
-        {title: 'Residual'},
+        {name: 'overall_rank', type: 'integer'},
+        {name: 'change_in_rank', type: 'integer'},
+        {name: 'country', type: 'string'},
+        {name: 'score', type: 'number'},
+        {name: 'change_in_score', type: 'number'},
+        {name: 'gdp_per_capita', type: 'number'},
+        {name: 'social_support', type: 'number'},
+        {name: 'healthy_life_expectancy', type: 'number'},
+        {name: 'freedom_to_make_life_choices', type: 'number'},
+        {name: 'generosity', type: 'number'},
+        {name: 'trust', type: 'number'},
+        {name: 'residual', type: 'number'},
       ],
       rows: [
         [1,3,'Norway',7.537,0.039,1.616,1.534,0.797,0.635,0.362,0.316,2.277],
@@ -97,9 +78,9 @@ jsonapiServer.define({
         [4,-2,'Switzerland',7.494,-0.015,1.565,1.517,0.858,0.620,0.291,0.367,2.277],
         [5,0,'Finland',7.469,0.056,1.444,1.540,0.809,0.618,0.245,0.383,2.430],
       ],
-      owner: {
-        type: 'users',
-        id: '42D2F0C8-407D-48DB-A944-D6D68D28DE2A',
+      info: {
+        table: 'tableinfos',
+        id: 'F6E7A2B8-F522-411F-BA1E-C28AB85A4E7C',
       }
     }
   ]
