@@ -519,7 +519,7 @@ const writeData = async (data) => {
 
     await pool.query('CREATE TABLE IF NOT EXISTS tableinfos (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
     await pool.query('CREATE INDEX IF NOT EXISTS tableinfos_data_idx ON tableinfos USING gin(data jsonb_path_ops);')
-    await pool.query('CREATE OR REPLACE FUNCTION tableinfos_fts_gin(data jsonb) RETURNS tsvector AS $BODY$ SELECT to_tsvector(data); $BODY$ LANGUAGE sql IMMUTABLE;')
+    await pool.query("CREATE OR REPLACE FUNCTION tableinfos_fts_gin(data jsonb) RETURNS tsvector AS $BODY$ SELECT setweight(to_tsvector(data->'title'), 'A') || setweight(to_tsvector(data->'tags'), 'B') || setweight(to_tsvector(data->'description'), 'C') || setweight(to_tsvector(data->'fields'), 'D'); $BODY$ LANGUAGE sql IMMUTABLE;")
     await pool.query('CREATE INDEX IF NOT EXISTS tableinfos_fts_idx ON tableinfos USING gin(tableinfos_fts_gin(data));')
 
     await pool.query('CREATE TABLE IF NOT EXISTS tables (id uuid NOT NULL UNIQUE PRIMARY KEY, data jsonb);')
