@@ -7,7 +7,7 @@ class TablesSortMenuButton extends Component < {
 } > {
 
   render() {
-    const {selectedValue, onSelection} = this.props
+    const {selectedValue, onSelection, style} = this.props
     const menuItems = [
       {
         title: 'Default',
@@ -59,7 +59,10 @@ class TablesSortMenuButton extends Component < {
         menuItems={menuItems}
         onSelection={onSelection}
         selectedValue={selectedValue}
-        style={{margin:'10px'}}
+        style={{
+          margin:'10px',
+          ...style
+        }}
         title={`Sort: ${curSortTitle}`}
       />
     )

@@ -4,6 +4,7 @@ import {connect} from 'react-redux'
 import {readEndpoint, safeGet} from 'jsonapi-client-redux'
 import {setTablesSort} from '../appreducer'
 import Progress from './Progress'
+import SearchBar from './SearchBar'
 import TablesSortMenuButton from './TablesSortMenuButton'
 import TableSummary from './TableSummary'
 
@@ -48,7 +49,14 @@ class UsersRender extends Component < {
           right: '0px',
           top: '90px',
         }}>
-          <TablesSortMenuButton onSelection={this.handleSelection} selectedValue={tablesSort}/>
+          <div style={{
+              display: 'flex',
+              flexDirection: 'row',
+              width: '100%',
+            }}>
+            <SearchBar/>
+            <TablesSortMenuButton onSelection={this.handleSelection} selectedValue={tablesSort} style={{display: 'inline-block', margin: '0px'}}/>
+          </div>
           <InfiniteScroll
             pageStart={0}
             loadMore={this.loadMore}
