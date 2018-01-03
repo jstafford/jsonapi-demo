@@ -109,7 +109,7 @@ const searchToFilter = (searchStr) => {
 
 const buildSortKey = (tablesSort, tablesQuery, ownProps) => {
   const filter = searchToFilter(ownProps.location.search)
-  const queryParam = tablesQuery ? `&query=${tablesQuery}` : ''
+  const queryParam = tablesQuery ? `&query=${tablesQuery.split(/\s+/).join('|')}` : ''
   const sortKey = `sort=${tablesSort}${queryParam}${filter}`
   return sortKey
 }
