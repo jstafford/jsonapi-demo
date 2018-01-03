@@ -50,9 +50,8 @@ class TablesSortMenuButton extends Component < {
         value: '-title'
       }
     ]
-    const curSortTitle = menuItems
-      .filter(item => (item.value === selectedValue))[0]
-      .title
+    const curSortItems = menuItems.filter(item => (item.value === selectedValue))
+    const curSortTitle = curSortItems.length > 0 ? curSortItems[0].title : selectedValue
 
     return (
       <MenuButton

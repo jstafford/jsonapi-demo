@@ -110,8 +110,15 @@ PostgresHandler.prototype.search = async function(request, callback) {
   if (err) {
     return callback(err)
   }
-  let query = `SELECT data, count(*) OVER() AS full_count FROM ${request.params.type}`
-  let values = []
+  const values = []
+
+  let query = `SELECT data, count(*) OVER() AS full_count FROM`
+  if (request.params.query) {
+    query += ` (SELECT data, ${request.params.type}_fts_gin(data) as document FROM`
+  }
+
+  query += ` ${request.params.type}`
+
   if (request.params.filter) {
     query += ' WHERE'
     const filters = Object.keys(request.params.filter)
@@ -155,11 +162,19 @@ PostgresHandler.prototype.search = async function(request, callback) {
     })
   }
 
+  if (request.params.query) {
+    values.push(request.params.query)
+    query += `) AS fts WHERE fts.document @@ to_tsquery(\$${values.length})`
+  }
+
   if (request.params.sort) {
     const dir = request.params.sort.charAt(0) === '-' ? 'DESC' : 'ASC'
     const noDirSort = request.params.sort.replace('-', '')
     values.push(noDirSort)
     query += ` ORDER BY data->\$${values.length} ${dir}`
+  } else if (request.params.query) {
+    values.push(request.params.query)
+    query += ` ORDER BY ts_rank(fts.document, to_tsquery(\$${values.length})) DESC`
   }
   if (request.params.page) {
     const page = request.params.page

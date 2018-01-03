@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import {connect} from 'react-redux'
 import {readEndpoint, safeGet} from 'jsonapi-client-redux'
-import {setTablesSort} from '../appreducer'
+import {setTablesQuery, setTablesSort} from '../appreducer'
 import Progress from './Progress'
 import SearchBar from './SearchBar'
 import TablesSortMenuButton from './TablesSortMenuButton'
@@ -10,30 +10,38 @@ import TableSummary from './TableSummary'
 
 class UsersRender extends Component < {
   tablesSort: string,
+  tablesQuery: string,
   tablesIds: Array<string>,
   total: number,
   changeSort: (tablesSort) => void,
-  sortTables: (tablesSort) => void,
-  loadMoreTables: (tablesSort, offset) => void
+  changeQuery: (tablesQuery) => void,
+  sortTables: (tablesSort, tablesQuery) => void,
+  loadMoreTables: (tablesSort, tablesQuery, offset) => void
 } > {
   componentWillMount() {
-    const {loadMoreTables, tablesSort} = this.props
-    loadMoreTables(tablesSort, 0)
+    const {loadMoreTables, tablesQuery, tablesSort} = this.props
+    loadMoreTables(tablesSort, tablesQuery, 0)
   }
 
   handleSelection = (value, e) => {
-    const {sortTables, changeSort, tablesSort} = this.props
+    const {sortTables, changeSort, tablesQuery, tablesSort} = this.props
     if (value !== tablesSort) {
       changeSort(value)
-      sortTables(value)
+      sortTables(value, tablesQuery)
     }
   }
 
   loadMore = (page) => {
-    const {loadMoreTables, tablesSort, tablesIds} = this.props
+    const {loadMoreTables, tablesSort, tablesQuery, tablesIds} = this.props
     if (tablesIds) {
-      loadMoreTables(tablesSort, tablesIds.length)
+      loadMoreTables(tablesSort, tablesQuery, tablesIds.length)
     }
+  }
+
+  onSearch = (query) => {
+    const {changeQuery, loadMoreTables, tablesSort} = this.props
+    changeQuery(query)
+    loadMoreTables(tablesSort, query, 0)
   }
 
   render() {
@@ -52,10 +60,14 @@ class UsersRender extends Component < {
           <div style={{
               display: 'flex',
               flexDirection: 'row',
-              width: '100%',
+              justifyContent: 'space-evenly',
+              width: '94%',
+              margin: '0% 3%',
             }}>
-            <SearchBar/>
-            <TablesSortMenuButton onSelection={this.handleSelection} selectedValue={tablesSort} style={{display: 'inline-block', margin: '0px'}}/>
+            <SearchBar style={{
+                marginRight: '10px',
+              }} onSearch={this.onSearch}/>
+            <TablesSortMenuButton onSelection={this.handleSelection} selectedValue={tablesSort} style={{position: 'relative', margin: '0px'}}/>
           </div>
           <InfiniteScroll
             pageStart={0}
@@ -95,15 +107,23 @@ const searchToFilter = (searchStr) => {
   return filter
 }
 
+const buildSortKey = (tablesSort, tablesQuery, ownProps) => {
+  const filter = searchToFilter(ownProps.location.search)
+  const queryParam = tablesQuery ? `&query=${tablesQuery}` : ''
+  const sortKey = `sort=${tablesSort}${queryParam}${filter}`
+  return sortKey
+}
+
 const mapStateToProps = (state, ownProps) => {
   const tablesSort = state.app.tablesSort
-  const filter = searchToFilter(ownProps.location.search)
-  const sortKey = `sort=${tablesSort}${filter}`
+  const tablesQuery = state.app.tablesQuery
+  const sortKey = buildSortKey(tablesSort, tablesQuery, ownProps)
   const tablesIds = safeGet(state, ['api', 'sorts', 'tableinfos', sortKey, 'ids'], null)
   const total = safeGet(state, ['api', 'sorts', 'tableinfos', sortKey, 'total'], null)
   return {
-    tablesSort,
     tablesIds,
+    tablesQuery,
+    tablesSort,
     total,
   }
 }
@@ -112,15 +132,18 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   changeSort: (tablesSort) => {
     dispatch(setTablesSort(tablesSort))
   },
-  loadMoreTables: (tablesSort, offset) => {
-    const filter = searchToFilter(ownProps.location.search)
+  changeQuery: (tablesQuery) => {
+    dispatch(setTablesQuery(tablesQuery))
+  },
+  loadMoreTables: (tablesSort, tablesQuery, offset) => {
+    const sortKey = buildSortKey(tablesSort, tablesQuery, ownProps)
     dispatch(
-      readEndpoint(`tableinfos?sort=${tablesSort}${filter}&page[limit]=50&page[offset]=${offset}`)
+      readEndpoint(`tableinfos?${sortKey}&page[limit]=50&page[offset]=${offset}`)
     )
   },
-  sortTables: (tablesSort) => {
-    const filter = searchToFilter(ownProps.location.search)
-    dispatch(readEndpoint(`tableinfos?sort=${tablesSort}${filter}`))
+  sortTables: (tablesSort, tablesQuery) => {
+    const sortKey = buildSortKey(tablesSort, tablesQuery, ownProps)
+    dispatch(readEndpoint(`tableinfos?${sortKey}`))
   }
 })
 

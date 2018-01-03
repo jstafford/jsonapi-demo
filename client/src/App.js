@@ -18,12 +18,9 @@ class App extends Component {
     return (
       <Router>
         <div style={{
-            bottom: '0px',
-            left: '0px',
+            height: '100%',
             overflow: 'hidden',
-            position: 'absolute',
-            right: '0px',
-            top: '0px',
+            width: '100%',
           }}>
           <ReactHint events delay={100} position='bottom' />
           <Switch>

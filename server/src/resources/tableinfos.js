@@ -8,7 +8,9 @@ jsonapiServer.define({
   resource: 'tableinfos',
   description: 'Represents the meta info about a given table.',
   handlers: tableinfosHandler,
-  searchParams: {},
+  searchParams: {
+    query: jsonapiServer.Joi.string()
+  },
   attributes: {
     title: jsonapiServer.Joi.string()
       .description('The table title')
