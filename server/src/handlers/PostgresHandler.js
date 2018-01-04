@@ -126,11 +126,9 @@ PostgresHandler.prototype.search = async function(request, callback) {
       let and = ''
       const filterParam = request.params.filter[key]
 
-      query += `${and}`
-      and = ' AND'
       // Id filtering handled special, since id is primary key
       if (key === 'id') {
-        query += ` id`
+        query += `${and} id`
         if (Array.isArray(filterParam)) {
           let comma = ''
           query += ' IN ('
@@ -144,21 +142,37 @@ PostgresHandler.prototype.search = async function(request, callback) {
           values.push(filterParam)
           query += ` = \$${values.length}`
         }
-      } else {
-        query += ` data @>`
-        if (typeof(filterParam) === 'object') {
-          if (request.resourceConfig.attributes[key]._settings.__many) {
-            values.push(`{"${key}":${JSON.stringify([filterParam])}}`)
+      } else if (typeof(filterParam) === 'object'
+            && request.resourceConfig.attributes[key]._settings.__many) {
+        Object.keys(filterParam).forEach( filterKey => {
+          if (Array.isArray(filterParam[filterKey])) {
+            filterParam[filterKey].forEach(keyValue => {
+              query += `${and} data @>`
+              values.push(`{"${key}":[{"${filterKey}":"${keyValue}"}]}`)
+              query += ` \$${values.length}`
+              and = ' AND'
+            })
           } else {
-            values.push(`{"${key}":${JSON.stringify(filterParam)}}`)
+            query += `${and} data @>`
+            if (typeof(filterParam[filterKey]) === 'object') {
+              values.push(`{"${key}":[{"${filterKey}":${JSON.stringify(filterParam[filterKey])}}]}`)
+            } else {
+              values.push(`{"${key}":[{"${filterKey}":"${filterParam[filterKey]}"}]}`)
+            }
+            query += ` \$${values.length}`
+            and = ' AND'
           }
-          query += ` \$${values.length}`
+        })
+      } else {
+        query += `${and} data @>`
+        if (typeof(filterParam) === 'object') {
+          values.push(`{"${key}":${JSON.stringify(filterParam)}}`)
         } else {
           values.push(`{"${key}":"${filterParam}"}`)
-          query += ` \$${values.length}`
         }
+        query += ` \$${values.length}`
       }
-
+      and = ' AND'
     })
   }
 

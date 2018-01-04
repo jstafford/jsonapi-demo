@@ -2,7 +2,15 @@ import React, {Component} from 'react'
 
 class TagBar extends Component<{
   tags: Array<Object>,
+  onTagClick: (tag) => void,
 }> {
+  onClick = (e) => {
+    const {onTagClick} = this.props
+    if (onTagClick) {
+      onTagClick(e.target.textContent)
+    }
+  }
+
   render() {
     const {tags} = this.props
     const defaultStyle = {
@@ -18,7 +26,7 @@ class TagBar extends Component<{
     return (
       <span>
         {tags.map((tag, index) => (
-          <span key={index} style={defaultStyle}>{tag.id}</span>
+          <span key={index} style={defaultStyle} onClick={this.onClick}>{tag.id}</span>
         ))}
       </span>
     )
