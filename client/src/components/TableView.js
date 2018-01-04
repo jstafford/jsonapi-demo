@@ -69,6 +69,12 @@ class TableViewRender extends Component<{
               }}/>
             <br/>
             <Cell value={tableinfo.attributes.description} valueChanged={newValue=>this.infoAttributeChanged(newValue, 'description')}/>
+            <br/>
+            <span style={{
+              fontSize: 'small',
+            }}>★: {tableinfo.attributes.starsCount} <em>Columns:</em> {tableinfo.attributes.columnsCount} <em>Rows:</em> {tableinfo.attributes.rowsCount} <em>Created:</em> {tableinfo.attributes.createdDate} <em>Updated:</em> {tableinfo.attributes.updatedDate}
+            </span>
+            <br/>
             <span style={{
               fontWeight: 'bold',
             }}>Tags: </span><TagBar tags={tableinfo.relationships.tags.data}/>
