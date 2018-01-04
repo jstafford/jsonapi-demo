@@ -1,10 +1,9 @@
 import _ from 'lodash'
 import React, {Component} from 'react'
-import InfiniteScroll from 'react-infinite-scroller'
 import {connect} from 'react-redux'
 import {readEndpoint, safeGet} from 'jsonapi-client-redux'
 import {setTablesQuery, setTablesSort, addTablesTags, removeTablesTags} from '../appreducer'
-import Progress from './Progress'
+import InfiniteScroll from './InfiniteScroll'
 import SearchBar from './SearchBar'
 import TablesSortMenuButton from './TablesSortMenuButton'
 import TableSummary from './TableSummary'
@@ -112,11 +111,8 @@ class UsersRender extends Component < {
           </span>
           <h3>{total} Tables</h3>
           <InfiniteScroll
-            pageStart={0}
             loadMore={this.loadMore}
             hasMore={tablesIds ? tablesIds.length < total : true}
-            loader={<Progress/>}
-            useWindow={false}
           >
             <ul >
               {tablesIds && tablesIds.map(id => (

@@ -1,9 +1,8 @@
 import React, {Component} from 'react'
-import InfiniteScroll from 'react-infinite-scroller'
 import {connect} from 'react-redux'
 import {readEndpoint, safeGet} from 'jsonapi-client-redux'
 import {setUsersSort} from '../appreducer'
-import Progress from './Progress'
+import InfiniteScroll from './InfiniteScroll'
 import UsersSortMenuButton from './UsersSortMenuButton'
 import UserSummary from './UserSummary'
 
@@ -50,11 +49,8 @@ class UsersRender extends Component < {
         }}>
           <UsersSortMenuButton onSelection={this.handleSelection} selectedValue={usersSort}/>
           <InfiniteScroll
-            pageStart={0}
             loadMore={this.loadMore}
             hasMore={usersIds ? usersIds.length < total : true}
-            loader={<Progress/>}
-            useWindow={false}
           >
             <ul >
               {usersIds && usersIds.map(id => (

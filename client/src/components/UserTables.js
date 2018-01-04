@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
-import InfiniteScroll from 'react-infinite-scroller'
 import {connect} from 'react-redux'
 import {safeGet, readEndpoint} from 'jsonapi-client-redux'
 import {setTablesSort} from '../appreducer'
+import InfiniteScroll from './InfiniteScroll'
 import Progress from './Progress'
 import TableSummary from './TableSummary'
 import TablesSortMenuButton from './TablesSortMenuButton'
@@ -53,11 +53,8 @@ class UserTablesRender extends Component<{
         }}>
           <TablesSortMenuButton onSelection={this.handleSelection} selectedValue={tablesSort}/>
           <InfiniteScroll
-            pageStart={0}
             loadMore={this.loadMore}
             hasMore={tablesIds ? tablesIds.length < tablesTotal : true}
-            loader={<Progress/>}
-            useWindow={false}
           >
             <ul>
               {tablesIds && tablesIds.map(id => (
