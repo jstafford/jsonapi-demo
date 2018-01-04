@@ -6,6 +6,7 @@ import TableWrapper from './TableWrapper'
 class TableHeader extends Component<{
   table: table,
   tableinfo: Object,
+  tablesFocus: string,
   resourceChanged: (data: Object, path: string, newValue: string) => void,
 }> {
 
@@ -15,7 +16,7 @@ class TableHeader extends Component<{
   }
 
   render() {
-    const {table, tableinfo} = this.props
+    const {table, tableinfo, tablesFocus} = this.props
     if (table &&  tableinfo) {
       const headers = []
       const types = []
@@ -38,8 +39,8 @@ class TableHeader extends Component<{
           <div style={{
             display: 'table-header-group',
           }}>
-            <TableRow row={headers} tips={tips} valueAtColumnChanged={this.valueAtColumnChanged}/>
-            <TableRow row={types} tips={tips}/>
+            <TableRow row={headers} rowType='h' rowNum={0} tablesFocus={tablesFocus} tips={tips} valueAtColumnChanged={this.valueAtColumnChanged}/>
+            <TableRow row={types} rowType='h' rowNum={1} tablesFocus={tablesFocus} tips={tips}/>
           </div>
         </TableWrapper>
       )

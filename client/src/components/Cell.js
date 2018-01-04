@@ -4,11 +4,24 @@ import numbers from '../numbers'
 
 class Cell extends Component<{
   colNum: number,
+  rowNum: number,
+  rowType: string,
+  tablesFocus: string,
   value: string,
   valueChanged: (string, e) => void,
 }> {
+  input = null
+
+  componentDidUpdate() {
+    if (this.input) {
+      const len = this.input.value.length
+      this.input.focus()
+      this.input.setSelectionRange(len, len)
+    }
+  }
+
   render() {
-    const {colNum, style, value, valueChanged} = this.props
+    const {colNum, rowNum, rowType, style, tablesFocus, value, valueChanged} = this.props
     const valueIsNumeric = isNumber(value)
     const valueIsBoolean = isBoolean(value)
     const displayValue = valueIsNumeric ? numbers.numberToString(value) : valueIsBoolean ? value.toString() : value
@@ -19,8 +32,10 @@ class Cell extends Component<{
       border: 'none',
       width: '100%'
     }
+    const cellName = `${rowType}_${rowNum}_${colNum}`
+    const isFocused = tablesFocus === cellName
 
-    if (valueChanged) {
+    if (isFocused && valueChanged) {
       const onBlur = (e) => {
         const rawValue = e.target.value
         if (rawValue !== displayValue) {
@@ -31,9 +46,10 @@ class Cell extends Component<{
 
       return (
         <input
-          name={'' + colNum}
+          name={cellName}
           type='text'
           defaultValue={displayValue}
+          ref={el => {this.input = el}}
           style={{...defaultStyle, ...style}}
           onBlur={onBlur}
         />
@@ -41,6 +57,7 @@ class Cell extends Component<{
     } else {
       return (
         <span
+          name={cellName}
           style={{
             padding: '1px',
             whiteSpace: 'nowrap',

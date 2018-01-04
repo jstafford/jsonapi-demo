@@ -5,6 +5,7 @@ import TableWrapper from './TableWrapper'
 
 class TableFooter extends Component<{
   table: table,
+  tablesFocus: string,
 }> {
   numberFormater = new Intl.NumberFormat()
 
@@ -27,7 +28,7 @@ class TableFooter extends Component<{
           if (numberTypes.has(colType)) {
             displayValue = this.numberFormater.format(displayValue)
           }
-          statRow.push((<span><em>{stat.name}:</em> {displayValue}</span>))
+          statRow.push((<span name={`f_${row}_${col}`}><em>{stat.name}:</em> {displayValue}</span>))
         } else {
           statRow.push(null)
         }
@@ -39,7 +40,7 @@ class TableFooter extends Component<{
   }
 
   render() {
-    const {table} = this.props
+    const {table, tablesFocus} = this.props
     if (table) {
       const statRows = this.convertStatColsToDisplayRows(table)
       return (
@@ -49,7 +50,7 @@ class TableFooter extends Component<{
           <div style={{
             display: 'table-footer-group',
           }}>
-            {statRows && statRows.map((statRow, index) => (<TableRow key={index} row={statRow}/>))}
+            {statRows && statRows.map((statRow, index) => (<TableRow key={index} rowType='f' rowNum={index} tablesFocus={tablesFocus} row={statRow}/>))}
           </div>
         </TableWrapper>
       )

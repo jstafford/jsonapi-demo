@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {readEndpoint, safeGet, updateResource} from 'jsonapi-client-redux'
+import {setTablesFocus} from '../appreducer'
 import table from '../table'
 import user from '../user'
 import {generatePatch} from '../generatePatch'
@@ -17,8 +18,10 @@ class TableViewRender extends Component<{
   tableid: string,
   tableinfo: Object,
   tableinfoid: string,
+  tablesFocus: string,
   ensureTableinfo: (id: string) => void,
   resourceChanged: (data: Object, path: string, newValue: string) => void,
+  setFocus: (name: string) => void,
 }> {
   componentWillMount () {
     const {ensureTableinfo, tableinfoid} = this.props
@@ -53,8 +56,13 @@ class TableViewRender extends Component<{
     this.isSyncingFooterScroll = false
   }
 
+  onClick = (e) => {
+    const {setFocus} = this.props
+    setFocus(e.target.getAttribute('name'))
+  }
+
   render() {
-    const {owner, table, tableinfo, resourceChanged} = this.props
+    const {owner, table, tableinfo, tablesFocus, resourceChanged} = this.props
 
     if (owner && table && tableinfo) {
       return (
@@ -83,7 +91,7 @@ class TableViewRender extends Component<{
               fontSize: 'small',
               textAlign: 'left',
               verticalAlign: 'middle',
-            }}>
+            }} onClick={this.onClick}>
             <main
               ref={ (element) => { this.mainDomEl = element } }
               onScroll={this.onMainScroll}
@@ -95,8 +103,8 @@ class TableViewRender extends Component<{
                 width: '100%',
               }}
             >
-              <TableHeader table={table} tableinfo={tableinfo} resourceChanged={resourceChanged}/>
-              <TableBody table={table} resourceChanged={resourceChanged}/>
+              <TableHeader table={table} tableinfo={tableinfo} tablesFocus={tablesFocus} resourceChanged={resourceChanged}/>
+              <TableBody table={table} tablesFocus={tablesFocus} resourceChanged={resourceChanged}/>
             </main>
             <footer
               ref={ (element) => { this.footerDomEl = element } }
@@ -108,7 +116,7 @@ class TableViewRender extends Component<{
                 position: 'absolute',
                 width:'100%',
               }}>
-                <TableFooter table={table}/>
+                <TableFooter table={table} tablesFocus={tablesFocus}/>
             </footer>
           </div>
         </div>
@@ -121,6 +129,7 @@ class TableViewRender extends Component<{
 
 const mapState = (state: GenericMap, ownProps: Object): Object => {
   const tableinfoid = ownProps.match.params.tableid
+  const tablesFocus = state.app.tablesFocus
   const tableinfo = safeGet(state, ['api', 'resources', 'tableinfos', tableinfoid], null)
   const ownerid = tableinfo ? tableinfo.relationships.owner.data.id : undefined
   const tableid = tableinfo ? tableinfo.relationships.table.data.id : undefined
@@ -132,6 +141,7 @@ const mapState = (state: GenericMap, ownProps: Object): Object => {
     tableid,
     tableinfo,
     tableinfoid,
+    tablesFocus,
   }
 }
 
@@ -145,6 +155,9 @@ const mapDisp = (dispatch: Dispatch<Action>, ownProps: Object): Object => (
       const patch = generatePatch(data, path, newValue)
       console.log(JSON.stringify(patch))
       dispatch(updateResource(patch))
+    },
+    setFocus: (name: string): void => {
+      dispatch(setTablesFocus(name))
     }
   }
 )

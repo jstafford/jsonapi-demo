@@ -5,11 +5,12 @@ import TableWrapper from './TableWrapper'
 
 class TableBody extends Component<{
   table: table,
+  tablesFocus: string,
   resourceChanged: (data: Object, path: string, newValue: string) => void,
 }> {
 
   render() {
-    const {table, resourceChanged} = this.props
+    const {table, tablesFocus, resourceChanged} = this.props
     if (table) {
       const rows = table.attributes.rows
       return (
@@ -17,7 +18,7 @@ class TableBody extends Component<{
           <div style={{
             display: 'table-row-group',
           }}>
-            {rows && rows.map((row, rowNum) => (<TableRow key={rowNum} row={row} valueAtColumnChanged={(colNum, newValue) => resourceChanged(table, `/attributes/rows/${rowNum}/${colNum}`, newValue)}/>))}
+            {rows && rows.map((row, rowNum) => (<TableRow key={rowNum} rowType='b' rowNum={rowNum} tablesFocus={tablesFocus} row={row} valueAtColumnChanged={(colNum, newValue) => resourceChanged(table, `/attributes/rows/${rowNum}/${colNum}`, newValue)}/>))}
           </div>
         </TableWrapper>
       )

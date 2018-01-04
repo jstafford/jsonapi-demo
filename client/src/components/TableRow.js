@@ -3,6 +3,9 @@ import Cell from './Cell'
 
 class TableRow extends Component<{
   row: Array<string>,
+  rowNum: number,
+  rowType: string,
+  tablesFocus: string,
   tips: Array<string>,
   valueAtColumnChanged: (colNum, newValue: string) => void,
 }> {
@@ -13,7 +16,7 @@ class TableRow extends Component<{
   }
 
   render() {
-    const {row, tips, valueAtColumnChanged} = this.props
+    const {row, rowNum, rowType, tablesFocus, tips, valueAtColumnChanged} = this.props
     const cellStyle = {
       border: '1px solid darkgray',
       display: 'table-cell',
@@ -41,7 +44,7 @@ class TableRow extends Component<{
       }}>
         {row.map((value, index) => (
           <div key={index} style={index < numStickyCells ? stickyCellStyles[index] : cellStyle} data-rh={tips ? tips[index] : undefined}>
-            <Cell value={value} colNum={index} valueChanged={valueAtColumnChanged ? this.valueChanged : null}/>
+            <Cell value={value} rowType={rowType} rowNum={rowNum} colNum={index} tablesFocus={tablesFocus} valueChanged={valueAtColumnChanged ? this.valueChanged : null}/>
           </div>))
         }
       </div>

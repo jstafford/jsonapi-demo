@@ -6,12 +6,14 @@ const APP_TABLES_SORT = 'APP_TABLES_SORT'
 const APP_TABLES_QUERY = 'APP_TABLES_QUERY'
 const APP_ADD_TABLES_TAGS = 'APP_ADD_TABLES_TAGS'
 const APP_REMOVE_TABLES_TAGS = 'APP_REMOVE_TABLES_TAGS'
+const APP_TABLES_FOCUS = 'APP_TABLES_FOCUS'
 
 export const setUsersSort = createAction(APP_USERS_SORT)
 export const setTablesSort = createAction(APP_TABLES_SORT)
 export const setTablesQuery = createAction(APP_TABLES_QUERY)
 export const addTablesTags = createAction(APP_ADD_TABLES_TAGS)
 export const removeTablesTags = createAction(APP_REMOVE_TABLES_TAGS)
+export const setTablesFocus = createAction(APP_TABLES_FOCUS)
 
 const setUsersSortHandler = (state, action) => {
   const usersSort = action.payload
@@ -50,8 +52,15 @@ const removeTablesTagsHandler = (state, action) => {
   return state
 }
 
+const setTablesFocusHandler = (state, action) => {
+  const tablesFocus = action.payload
+  const newState = immutable(state).set(['tablesFocus'], tablesFocus).value()
+  return newState
+}
+
 const defaultState = {
   usersSort: '',
+  tablesFocus: '',
   tablesSort: '',
   tablesQuery: '',
   tablesTags: [],
@@ -61,6 +70,8 @@ const appReducer = (state = defaultState, action) => {
   switch (action.type) {
     case APP_USERS_SORT:
       return setUsersSortHandler(state, action)
+    case APP_TABLES_FOCUS:
+      return setTablesFocusHandler(state, action)
     case APP_TABLES_SORT:
       return setTablesSortHandler(state, action)
     case APP_TABLES_QUERY:
