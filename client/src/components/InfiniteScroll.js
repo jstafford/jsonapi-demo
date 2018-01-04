@@ -11,49 +11,45 @@ export default class InfiniteScroll extends Component<{
     threshold: 250,
   }
 
+  ignoreEvents = false
   pageLoaded = 0
   scrollComponent = null
 
   componentDidMount() {
-    this.attachScrollListener()
+    const {hasMore} = this.props
+    const scrollEl = this.scrollComponent.parentNode
+
+    scrollEl.addEventListener('scroll', this.scrollListener)
+    scrollEl.addEventListener('resize', this.scrollListener)
+    this.ignoreEvents = !hasMore
   }
 
   componentDidUpdate() {
-    this.attachScrollListener()
+    const {hasMore} = this.props
+
+    this.ignoreEvents = !hasMore
+    this.scrollListener()
   }
 
   componentWillUnmount() {
-    this.detachScrollListener()
-  }
-
-  detachScrollListener() {
     const scrollEl = this.scrollComponent.parentNode
 
     scrollEl.removeEventListener('scroll', this.scrollListener)
     scrollEl.removeEventListener('resize', this.scrollListener)
   }
 
-  attachScrollListener() {
-    if (!this.props.hasMore) {
+  scrollListener = () => {
+    if (this.ignoreEvents) {
       return
     }
-
-    const scrollEl = this.scrollComponent.parentNode
-
-    scrollEl.addEventListener('scroll', this.scrollListener)
-    scrollEl.addEventListener('resize', this.scrollListener)
-
-    this.scrollListener()
-  }
-
-  scrollListener = () => {
     const {loadMore, threshold} = this.props
     const el = this.scrollComponent
-    const offset = el.scrollHeight - el.parentNode.scrollTop - el.parentNode.clientHeight
+    const scrollEl = el.parentNode
+    const offset = el.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight
 
     if (offset < threshold) {
-      this.detachScrollListener()
-      // Call loadMore after detachScrollListener to allow for non-async loadMore functions
+      this.ignoreEvents = true
+      // Call loadMore after setting ignoreEvents to allow for non-async loadMore functions
       this.pageLoaded += 1
       loadMore(this.pageLoaded)
     }
