@@ -1,4 +1,3 @@
-
 // Action types of the library
 export const API_SET_AXIOS_CONFIG = 'API_SET_AXIOS_CONFIG'
 export const API_HYDRATE = 'API_HYDRATE'
