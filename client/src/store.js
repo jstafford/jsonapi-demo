@@ -1,5 +1,5 @@
 import {combineReducers, createStore, applyMiddleware, compose} from 'redux'
-import {reducer as api, setAxiosConfig} from 'jsonapi-client-redux'
+import {reducer as api, setAxiosConfig} from './jsonapi-client-redux'
 import reduxThunk from 'redux-thunk'
 import app from './appreducer'
 

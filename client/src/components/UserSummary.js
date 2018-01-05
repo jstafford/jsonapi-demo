@@ -1,4 +1,4 @@
-import {ensureResource, safeGet} from 'jsonapi-client-redux'
+import {ensureResource, safeGet} from '../jsonapi-client-redux'
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'

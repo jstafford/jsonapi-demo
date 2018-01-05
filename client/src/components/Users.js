@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {readEndpoint, safeGet} from 'jsonapi-client-redux'
+import {readEndpoint, safeGet} from '../jsonapi-client-redux'
 import {setUsersSort} from '../appreducer'
 import InfiniteScroll from './InfiniteScroll'
 import UsersSortMenuButton from './UsersSortMenuButton'
