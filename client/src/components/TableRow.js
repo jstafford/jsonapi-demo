@@ -29,12 +29,12 @@ class TableRow extends Component<{
         ...cellStyle,
         backgroundColor: 'gainsboro',
         position: 'sticky',
-        left: '1px',
+        left: '0px',
       }, {
         ...cellStyle,
         backgroundColor: 'gainsboro',
         position: 'sticky',
-        left: '173px',
+        left: '172px',
       }
     ]
     const numStickyCells = stickyCellStyles.length
