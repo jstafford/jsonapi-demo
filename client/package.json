@@ -6,8 +6,9 @@
   "author": "Jason Stafford <jason.stafford@scrycollective.com>",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.17.1",
+    "fast-deep-equal": "^1.0.0",
     "invariant": "^2.2.2",
-    "jsonapi-client-redux": "https://github.com/jstafford/redux-json-api",
     "lodash": "^4.17.4",
     "object-path-immutable": "^0.5.2",
     "react": "^16.2.0",
@@ -18,6 +19,7 @@
     "react-router-dom": "^4.2.2",
     "react-scripts": "^1.0.17",
     "redux": "^3.7.2",
+    "redux-actions": "^2.2.1",
     "redux-thunk": "^2.2.0",
     "warning": "^3.0.0"
   },

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {ensureResource, safeGet} from 'jsonapi-client-redux'
+import {ensureResource, safeGet} from '../jsonapi-client-redux'
 import {setUsersSort} from '../appreducer'
 import user from '../user'
 import Progress from './Progress'

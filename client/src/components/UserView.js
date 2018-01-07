@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link, Switch, Route} from 'react-router-dom'
-import {ensureResource, safeGet} from 'jsonapi-client-redux'
+import {ensureResource, safeGet} from '../jsonapi-client-redux'
 import user from '../user'
 import ButtonNavBar from './ButtonNavBar'
 import Progress from './Progress'

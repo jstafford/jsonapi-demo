@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
-import {readEndpoint, safeGet, updateResource} from 'jsonapi-client-redux'
+import {readEndpoint, safeGet, updateResource} from '../jsonapi-client-redux'
 import {setTablesFocus} from '../appreducer'
 import table from '../table'
 import user from '../user'

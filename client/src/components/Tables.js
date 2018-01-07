@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {readEndpoint, safeGet} from 'jsonapi-client-redux'
+import {readEndpoint, safeGet} from '../jsonapi-client-redux'
 import {setTablesQuery, setTablesSort, addTablesTags, removeTablesTags} from '../appreducer'
 import InfiniteScroll from './InfiniteScroll'
 import SearchBar from './SearchBar'

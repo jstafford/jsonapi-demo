@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {safeGet, readEndpoint} from 'jsonapi-client-redux'
+import {safeGet, readEndpoint} from '../jsonapi-client-redux'
 import {setTablesSort} from '../appreducer'
 import InfiniteScroll from './InfiniteScroll'
 import Progress from './Progress'

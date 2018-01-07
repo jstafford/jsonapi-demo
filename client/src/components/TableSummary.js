@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
-import {safeGet} from 'jsonapi-client-redux'
+import {safeGet} from '../jsonapi-client-redux'
 import table from '../table'
 import TagBar from './TagBar'
 
